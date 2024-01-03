@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0 mt-4">
-                            <form method="POST" action="/master/pamflet/{{$data->id}}" enctype="multipart/form-data">
+                            <form method="POST" action="{{ url('/master/pamflet/'.$data->id) }}" enctype="multipart/form-data">
                                 {{csrf_field()}}
                                 {{ method_field('PATCH') }}
                                 <div class="row">

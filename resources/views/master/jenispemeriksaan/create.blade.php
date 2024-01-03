@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0 mt-4">
-                            <form method="POST" action="/master/jenispemeriksaan">
+                            <form method="POST" action="{{ url('/master/jenispemeriksaan') }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <div class="row">
                                     <div class="col-sm-6">
@@ -104,7 +104,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/master/jenispemeriksaan/getDataParameterPemeriksaan',
+            url: '{{ url("/master/jenispemeriksaan/getDataParameterPemeriksaan") }}',
             data: { _token:token, lab_pemeriksaan_id:lab_pemeriksaan_id },
             success:function(data){
                 $('#data_parameter_pemeriksaan').html(data.html);
@@ -160,7 +160,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/master/jenispemeriksaan/hapusDataParameterPemeriksaan',
+            url: '{{ url("/master/jenispemeriksaan/hapusDataParameterPemeriksaan") }}',
             data: { _token:token, parameter_ids:parameter_ids, nama_parameter:nama_parameter, id:id, lab_pemeriksaan_id:lab_pemeriksaan_id },
             success:function(data){
                 $('#parameter_ids').val(data.ids);

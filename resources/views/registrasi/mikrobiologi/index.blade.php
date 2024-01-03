@@ -9,7 +9,7 @@
         <div class="">
             <h5 class=""> Daftar Registrasi Online Lab Mikrobiologi</h5>
         </div>
-        <a href="/registrasi/mikrobiologi/create" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg> Registrasi</a>
+        <a href="{{ url('/registrasi/mikrobiologi/create') }}" class="btn btn-success"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg> Registrasi</a>
     </div>
     <div class="widget-content widget-content-area br-12 pb-3 pl-3 pr-3">
         <div class="input-group mb-4">
@@ -116,7 +116,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDetailPemeriksaan',
+            url: "{{ url('/registrasi/getDetailPemeriksaan') }}",
             data: { _token:token, id:id, jmlh_sampel:jmlh_sampel, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#bodyDetailPemeriksaan').html('');
@@ -149,7 +149,14 @@
         }
 
         $.ajax({
-            url:"/registrasi/mikrobiologi/paginationgridpemeriksaan?pagegridpemeriksaan="+page+"&combocari="+combocari+"&pencarian="+pencarian+"&lab_id=3",
+            url: '{{ url("/registrasi/mikrobiologi/paginationgridpemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pagegridpemeriksaan: page,
+                combocari: combocari,
+                pencarian: pencarian,
+                lab_id: 3,
+            },
             success:function(datas)
             {
                 $('#bodyGridMikrobiologi').html('');

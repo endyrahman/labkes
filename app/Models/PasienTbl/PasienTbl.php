@@ -26,7 +26,7 @@ class PasienTbl extends Model
         'updated_at'
     ];
 
-    public function getDataPasien() {
+    public static function getDataPasien() {
         $pasien = DB::table('pasien')->get();
 
         return $pasien;

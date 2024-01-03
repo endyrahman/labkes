@@ -121,7 +121,7 @@
                 <h5 class="modal-title" id="mdlUploadFormLabTitle">Proses Lab Penerimaan Sampel </h5>
             </div>
 
-            <form method="POST" action="/homecare/verifikasi/updateStatusLab">
+            <form method="POST" action="{{ url('/homecare/verifikasi/updateStatusLab') }}">
             {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">
@@ -159,7 +159,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="mdlJadwalKunjunganTitle">Upload </h5>
             </div>
-            <form method="POST" action="/homecare/verifikasi/updateStatusSelesaiLab" enctype="multipart/form-data">
+            <form method="POST" action="{{ url('/homecare/verifikasi/updateStatusSelesaiLab') }}" enctype="multipart/form-data">
             {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">

@@ -25,7 +25,7 @@ class KegiatanTbl extends Model
         'updated_at'
     ];
 
-    public function getDataLpKegiatan() {
+    public static function getDataLpKegiatan() {
         $kegiatan = DB::table('lp_kegiatan')->paginate(3, ['*'], 'pagelpkegiatan');
 
         return $kegiatan;

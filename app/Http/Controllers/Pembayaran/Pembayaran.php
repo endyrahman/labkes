@@ -18,11 +18,38 @@ class Pembayaran extends Controller
         $this->middleware('auth');
     }
 
+    // public function gridPembayaranVerifikasi() {
+    //     $data = DB::table('view_pembayaran')->get();
+
+    //     return view('pembayaran.verifikasi.laboratorium.index', compact('data'));
+    // }
+
     public function gridPembayaranVerifikasi() {
-        $data = DB::table('view_pembayaran')->get();
+        $data = DB::table('view_pemeriksaan')->orderBy('created_at', 'desc')
+            ->paginate(15, ['*'], 'pagegridverifikasipemeriksaan');
 
         return view('pembayaran.verifikasi.laboratorium.index', compact('data'));
     }
+
+    public function paginationGridVerifikasiPembayaran(Request $request) {
+        if($request->ajax())
+        {
+            $combocari = $request->combocari;
+            $pencarian = $request->pencarian;
+            $jenis_lab_id = $request->jenis_lab_id;
+
+            $data = DB::table('view_pemeriksaan')->orderBy('created_at', 'desc');
+
+            if ($combocari) {
+                $data->where($combocari, 'like', '%'.$pencarian.'%');
+            }
+
+            $data = $data->paginate(15, ['*'], 'pagegridverifikasipembayaran');
+
+            return view('pembayaran.verifikasi.laboratorium.list', compact('data'))->render();
+        }
+    }
+
 
     public function gridPembayaranVerifikasiHomecare() {
         $data = DB::table('view_homecare')->whereNotNull('pembayaran_id')->get();
@@ -112,7 +139,6 @@ class Pembayaran extends Controller
 
             return redirect::to('/pembayaran/homecare');
         } catch (\Throwable $t) {
-            dd($t);
             Alert::error('Gagal', 'Data Gagal Disimpan');
 
             DB::rollback();
@@ -160,7 +186,6 @@ class Pembayaran extends Controller
 
             return redirect::to('/pembayaran/laboratorium');
         } catch (\Throwable $t) {
-            dd($t);
             Alert::error('Gagal', 'Data Gagal Disimpan');
 
             DB::rollback();
@@ -202,7 +227,6 @@ class Pembayaran extends Controller
                 return redirect::to('/pembayaran/verifikasi/homecare');
             }
         } catch (\Throwable $t) {
-            dd($t);
             Alert::error('Gagal', 'Data Gagal Disimpan');
 
             DB::rollback();

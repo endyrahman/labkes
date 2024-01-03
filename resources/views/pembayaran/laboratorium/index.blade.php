@@ -39,7 +39,7 @@
                     <td>{{ date('d-m-Y H:i', strtotime($val->tgl_waktu_kunjungan)) }}</td>
                     <td>
                         @if (!$val->status_bayar)
-                            <a href="/pembayaran/laboratorium/create/{{$val->id}}" class="btn btn-outline-danger p-1 mb-1">Konfirmasi Bayar</a>
+                            <a href="{{ url('/pembayaran/laboratorium/create/'.$val->id) }}" class="btn btn-outline-danger p-1 mb-1">Konfirmasi Bayar</a>
                         @elseif ($val->status_bayar == 1)
                             <span class="shadow-none badge badge-warning">Proses Validasi</span>
                         @elseif ($val->status_bayar == 2)

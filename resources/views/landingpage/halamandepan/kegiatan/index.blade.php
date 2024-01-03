@@ -31,7 +31,11 @@
 
     function paginationHdKegiatan(page) {
         $.ajax({
-            url:"/paginationhdkegiatan?pagehdkegiatan="+page,
+            url: "{{ url('/paginationhdkegiatan') }}",
+            type: 'GET',
+            data: {
+                pagehdkegiatan: page
+            },
             success:function(datas)
             {
                 $('#hdkegiatan').html('');

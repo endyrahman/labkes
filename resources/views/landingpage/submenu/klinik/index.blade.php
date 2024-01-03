@@ -7,7 +7,7 @@
                 $pglayananklinik = App\Models\Landingpage\Layanankami\LayanankamiTbl::getDataLayananKami(1);
             @endphp
             <div class="col-lg-5 col-md-6 col-12">
-                <img src="/storage/foto_layanan/{{$pglayananklinik->foto_layanan}}" class="img-fluid rounded" alt="">
+                <img src="{{ url('/storage/foto_layanan/'.$pglayananklinik->foto_layanan) }}" class="img-fluid rounded" alt="">
             </div>
             <div class="col-lg-7 col-md-6 col-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
                 <div class="section-title ms-lg-4">
@@ -65,7 +65,13 @@
 
     function paginationLpPemeriksaan(page, pencarian) {
         $.ajax({
-            url:"/labklinik/paginationpemeriksaan?pagepemeriksaan="+page+"&pencarian="+pencarian+"&laboratorium=1",
+            url: '{{ url("/labklinik/paginationpemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pagepemeriksaan: page,
+                pencarian: pencarian,
+                laboratorium: 1
+            },
             success:function(datas)
             {
                 $('#listparameterklinik').html('');

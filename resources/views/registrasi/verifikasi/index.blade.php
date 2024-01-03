@@ -53,7 +53,7 @@
                 <h5 class="modal-title" id="mdlUploadFormLabTitle">Upload </h5>
             </div>
 
-            <form method="POST" action="/registrasi/verifikasi/updateStatusLab" enctype="multipart/form-data">
+            <form method="POST" action="{{ url('/registrasi/verifikasi/updateStatusLab') }}" enctype="multipart/form-data">
             {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">
@@ -88,7 +88,7 @@
                 <h5 class="modal-title" id="mdlUploadFormLabTitle">Proses Lab Penerimaan Sampel </h5>
             </div>
 
-            <form method="POST" action="/registrasi/verifikasi/updateStatusLab">
+            <form method="POST" action="{{ url('/registrasi/verifikasi/updateStatusLab') }}">
             {{ csrf_field() }}
             <div class="modal-body">
                 <div class="row">
@@ -127,7 +127,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="mdlJadwalKunjunganTitle">Upload Hasil Laboratorium</h5>
             </div>
-            <form method="POST" action="/registrasi/verifikasi/updateStatusLab" enctype="multipart/form-data">
+            <form method="POST" action="{{ url('/registrasi/verifikasi/updateStatusLab') }}" enctype="multipart/form-data">
             {{ csrf_field() }}
             <div class="modal-body">
                 <div class="form-row mb-2">
@@ -246,7 +246,7 @@
                   <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
-            <form method="POST" action="/pembayaran/verifikasi/laboratorium/updateStatusBayar" enctype="multipart/form-data">
+            <form method="POST" action="{{ url('/pembayaran/verifikasi/laboratorium/updateStatusBayar') }}" enctype="multipart/form-data">
             {{ csrf_field() }}
             <div class="modal-body">
                 <input type="hidden" class="form-control" name="validasi_pemeriksaan_id" id="validasi_pemeriksaan_id" readonly>
@@ -285,7 +285,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDetailPemeriksaan',
+            url: "{{ url('/registrasi/getDetailPemeriksaan') }}",
             data: { _token:token, id:id, jenis_lab_id:jenis_lab_id, user_id:user_id },
             success:function(data){
                 $('#bodyDetailPemeriksaan').html('');
@@ -347,7 +347,13 @@
         }
 
         $.ajax({
-            url:"/registrasi/verifikasi/paginationgridverifikasipemeriksaan?pagegridverifikasipemeriksaan="+page+"&combocari="+combocari+"&pencarian="+pencarian,
+            url: '{{ url("/registrasi/verifikasi/paginationgridverifikasipemeriksaan?pagegridverifikasipemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pagegridverifikasipemeriksaan: page,
+                combocari: combocari,
+                pencarian: pencarian,
+            },
             success:function(datas)
             {
                 $('#bodyGridVerifikasiPemeriksaan').html('');
@@ -367,14 +373,14 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDataPembayaran',
+            url: {{ url('/registrasi/getDataPembayaran') }},
             data: { _token:token, pemeriksaan_id:pemeriksaan_id },
             success:function(data) {
                 $('#mdlValidasiBayar').modal('toggle');
                 $('#validasi_pemeriksaan_id').val(data.pemeriksaan_id);
                 $('#validasi_pembayaran_id').val(data.id);
                 $('#nominal_transfer').val(data.nominal_transfer);
-                $('#fotoBuktiBayar').html("<img src='http://localhost:8000/storage/bukti_bayar/"+data.bukti_bayar+"' style='max-height:85vh;'>");
+                $('#fotoBuktiBayar').html("<img src='/labkes/storage/bukti_bayar/"+data.bukti_bayar+"' style='max-height:85vh;'>");
             }
         });
     }

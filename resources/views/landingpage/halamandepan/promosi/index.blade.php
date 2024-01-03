@@ -23,7 +23,11 @@
 
     function paginationLpPromosi(page) {
         $.ajax({
-            url:"/paginationlppromosi?pagelppromosi="+page,
+            url: "{{ url('/paginationlppromosi') }}",
+            type: 'GET',
+            data: {
+                pagelppromosi: page
+            },
             success:function(datas)
             {
                 $('#lppromosi').html('');

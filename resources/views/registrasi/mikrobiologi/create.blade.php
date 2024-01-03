@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0">
-                            <form method="POST" action="/registrasi/mikrobiologi/storemikrobiologi">
+                            <form method="POST" action="{{ url('/registrasi/mikrobiologi/storemikrobiologi') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <input id="jenis_lab_id" name="jenis_lab_id" class="form-control" value="3" type="hidden">
                                 <input id="tgl_pendaftaran" name="tgl_pendaftaran" value="{{ date('d-m-Y') }}" class="form-control" type="hidden" readonly required>
@@ -99,7 +99,7 @@
                                 </div>
 
                                 <div class="col-sm-12">
-                                    <h4>Paket Pemeriksaan</h4>
+                                    <h4>Parameter Pemeriksaan</h4>
                                     <div class="row mt-4" id="listparameterpemeriksaan">
                                         @include('registrasi.mikrobiologi.parameterpemeriksaan')
                                     </div>
@@ -253,7 +253,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDataJenisPemeriksaan',
+            url: "{{ url('/registrasi/getDataJenisPemeriksaan') }}",
             data: { _token:token, jenis_pemeriksaan_id:jenis_pemeriksaan_id, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#checklist').html(data.html);
@@ -276,7 +276,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getJadwalPemeriksaan',
+            url: "{{ url('/registrasi/getJadwalPemeriksaan') }}",
             data: { _token:token, waktu:waktu, tgl:tgl },
             success:function(data){
                 $('#jadwal').html(data);
@@ -343,7 +343,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDataKemasan',
+            url: "{{ url('/registrasi/getDataKemasan') }}",
             data: { _token:token, jenis_pemeriksaan_id:jenis_pemeriksaan_id, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#kemasan_sampel_id').html(data.option);
@@ -360,7 +360,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungJumlahSampelKimiaMikro',
+            url: "{{ url('/registrasi/hitungJumlahSampelKimiaMikro') }}",
             data: { _token:token, total_biaya:total_biaya, jmlh_sampel:jmlh_sampel, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -391,7 +391,11 @@
 
     function paginationPaketPemeriksaan(page) {
         $.ajax({
-            url:"/registrasi/mikrobiologi/paginationpaketpemeriksaan?pagepaketpemeriksaan="+page,
+            url: '{{ url("/registrasi/mikrobiologi/paginationpaketpemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pagepaketpemeriksaan: page,
+            },
             success:function(datas)
             {
                 $('#listpaketpemeriksaan').html('');
@@ -402,7 +406,11 @@
 
     function paginationParameterPemeriksaan(page) {
         $.ajax({
-            url:"/registrasi/mikrobiologi/paginationparameterpemeriksaan?pageparameterpemeriksaan="+page,
+            url: '{{ url("/registrasi/mikrobiologi/paginationparameterpemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pageparameterpemeriksaan: page,
+            },
             success:function(datas)
             {
                 $('#listparameterpemeriksaan').html('');
@@ -418,7 +426,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDetailTotalBiayaKimiaMikro',
+            url: "{{ url('/registrasi/getDetailTotalBiayaKimiaMikro') }}",
             data: { _token:token, jenis_lab_id:jenis_lab_id, jmlh_sampel:jmlh_sampel },
             success:function(data){
                 $('#bodyDetailTotalBiaya').html('');
@@ -444,7 +452,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaPaketPemeriksaanKimia',
+            url: "{{ url('/registrasi/hitungBiayaPaketPemeriksaanKimia') }}",
             data: { _token:token, paket_pemeriksaan_id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -468,7 +476,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaPaketPemeriksaanKimia',
+            url: "{{ url('/registrasi/hitungBiayaPaketPemeriksaanKimia') }}",
             data: { _token:token, paket_pemeriksaan_id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -492,7 +500,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaParameterPemeriksaanKimia',
+            url: "{{ url('/registrasi/hitungBiayaParameterPemeriksaanKimia') }}",
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -517,7 +525,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaParameterPemeriksaanKimia',
+            url: "{{ url('/registrasi/hitungBiayaParameterPemeriksaanKimia') }}",
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);

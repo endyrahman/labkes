@@ -130,11 +130,10 @@ return [
 
         'default' => [
             'url' => env('REDIS_URL'),
-            'host' => env('REDIS_HOST', '127.0.0.1'),
-            'username' => env('REDIS_USERNAME'),
-            'password' => env('REDIS_PASSWORD'),
-            'port' => env('REDIS_PORT', '6379'),
-            'database' => env('REDIS_DB', '0'),
+            'host' => env('REDIS_HOST', '123.100.226.204'),
+            'password' => env('REDIS_PASSWORD', '6k4YBcjOd0kWT1LEErn3W1WI02OTlLRwwrdMPb7TnZHIoo8G7e3k1aOvkHIv'),
+            'port' => env('REDIS_PORT', '6489'),
+            'database' => env('REDIS_DB', '1'),
         ],
 
         'cache' => [

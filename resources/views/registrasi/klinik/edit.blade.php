@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0 mt-4">
-                            <form method="POST" action="/registrasi/klinik/updateklinik">
+                            <form method="POST" action="{{ url('/registrasi/klinik/updateklinik') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <input id="jenis_lab_id" name="jenis_lab_id" class="form-control" value="1" type="hidden">
                                 <input type="hidden" name="pemeriksaan_id" id="pemeriksaan_id" value="{{$data->id}}">
@@ -73,7 +73,7 @@
                                 </div>
 
                                 <div class="col-sm-12 mt-2">
-                                    <h4>Pemeriksaan</h4>
+                                    <h4>Parameter Pemeriksaan</h4>
                                     <div class="row mt-4" id="listparameterpemeriksaan">
                                         @include('registrasi.klinik.parameterpemeriksaan')
                                     </div>
@@ -244,7 +244,7 @@
                 </button>
             </div>
             <div class="modal-body" >
-                <form method="POST" action="/spr/pasien" id="pasien-form">
+                <form method="POST" action="{{ url('/spr/pasien') }}" id="pasien-form">
                     {{ csrf_field() }}
                     <div class="row">
                         <div class="col-sm-6">
@@ -341,7 +341,11 @@
 
     function paginationPaketPemeriksaan(page) {
         $.ajax({
-            url:"/registrasi/klinik/paginationpaketpemeriksaan?pagepaketpemeriksaan="+page,
+            url: '{{ url("/registrasi/klinik/paginationpaketpemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pagepaketpemeriksaan: page,
+            },
             success:function(datas)
             {
                 $('#listpaketpemeriksaan').html('');
@@ -352,7 +356,11 @@
 
     function paginationParameterPemeriksaan(page) {
         $.ajax({
-            url:"/registrasi/klinik/paginationparameterpemeriksaan?pageparameterpemeriksaan="+page,
+            url: '{{ url("/registrasi/klinik/paginationparameterpemeriksaan") }}',
+            type: 'GET',
+            data: {
+                pageparameterpemeriksaan: page,
+            },
             success:function(datas)
             {
                 $('#listparameterpemeriksaan').html('');
@@ -372,7 +380,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getPaketPemeriksaanKlinik',
+            url: "{{ url('/registrasi/getPaketPemeriksaanKlinik') }}",
             data: { _token:token },
             success:function(data){
                 $('#paketPemeriksaanKlinik').html(data);
@@ -387,7 +395,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getJadwalPemeriksaan',
+            url: "{{ url('/registrasi/getJadwalPemeriksaan') }}",
             data: { _token:token, waktu:waktu, tgl:tgl },
             success:function(data){
                 $('#jadwal').html(data);
@@ -408,7 +416,7 @@
         var token = $("input[name='_token']").val();
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDetailPemeriksaanKlinik',
+            url: "{{ url('/registrasi/getDetailPemeriksaanKlinik') }}",
             data: { _token:token, id:id, arr_parameter_id:arr_parameter_id },
             success:function(data){
                 $('#detailPemeriksaanKlinik').html(data);
@@ -431,7 +439,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaPaketPemeriksaan',
+            url: "{{ url('/registrasi/hitungBiayaPaketPemeriksaan') }}",
             data: { _token:token, paket_pemeriksaan_id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -454,7 +462,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaPaketPemeriksaan',
+            url: "{{ url('/registrasi/hitungBiayaPaketPemeriksaan') }}",
             data: { _token:token, paket_pemeriksaan_id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -477,7 +485,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaParameterPemeriksaan',
+            url: "{{ url('/registrasi/hitungBiayaParameterPemeriksaan') }}",
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -501,7 +509,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/hitungBiayaParameterPemeriksaan',
+            url: "{{ url('/registrasi/hitungBiayaParameterPemeriksaan') }}",
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
@@ -516,7 +524,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getDetailTotalBiaya',
+            url: "{{ url('/registrasi/getDetailTotalBiaya') }}",
             data: { _token:token, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#bodyDetailTotalBiaya').html('');
@@ -551,7 +559,7 @@
         var formData = $(this).serialize();
 
         $.ajax({
-            url: '/spr/pasien',
+            url: "{{ url('/spr/pasien') }}",
             type: 'POST',
             data: formData,
             dataType: 'json',

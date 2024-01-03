@@ -17,7 +17,7 @@
 
                     <div class="content mt-4">
                         <h5>Laboratorium Klinik</h5>
-                        <p class="text-muted mb-0">{{ implode(' ', array_slice(explode(' ', $layanankami[0]->keterangan), 0, 15)); }}</p> <a href="/labklinik">Selengkapnya</a>
+                        <p class="text-muted mb-0">{{ implode(' ', array_slice(explode(' ', $layanankami[0]->keterangan), 0, 15)); }}</p> <a href="{{ url('/labklinik') }}">Selengkapnya</a>
                     </div>
                 </div>
             </div>
@@ -30,7 +30,7 @@
 
                     <div class="content mt-4">
                         <h5>Laboratorium Kimia</h5>
-                        <p class="text-muted mb-0">{{ implode(' ', array_slice(explode(' ', $layanankami[1]->keterangan), 0, 16)); }}</p> <a href="/labkimia">Selengkapnya</a>
+                        <p class="text-muted mb-0">{{ implode(' ', array_slice(explode(' ', $layanankami[1]->keterangan), 0, 16)); }}</p> <a href="{{ url('/labkimia') }}">Selengkapnya</a>
                     </div>
                 </div>
             </div>
@@ -43,7 +43,7 @@
 
                     <div class="content mt-4">
                         <h5>Laboratorium Mikrobiologi</h5>
-                        <p class="text-muted mb-0">{{ implode(' ', array_slice(explode(' ', $layanankami[2]->keterangan), 0, 20)); }}</p> <a href="/labmikrobiologi">Selengkapnya</a>
+                        <p class="text-muted mb-0">{{ implode(' ', array_slice(explode(' ', $layanankami[2]->keterangan), 0, 20)); }}</p> <a href="{{ url('/labmikrobiologi') }}">Selengkapnya</a>
                     </div>
                 </div>
             </div>

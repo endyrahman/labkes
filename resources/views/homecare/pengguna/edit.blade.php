@@ -59,7 +59,7 @@ max-width: 200px;
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0 mt-4">
-                        <form method="POST" action="/homecare/pengguna/updateHomeCare">
+                        <form method="POST" action="{{ url('/homecare/pengguna/updateHomeCare') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <input id="homecare_id" name="homecare_id" class="form-control" value="{{ $data->homecare_id }}" type="hidden">
                                 <div class="row">
@@ -236,7 +236,7 @@ max-width: 200px;
 
         $.ajax({
             type:'POST',
-            url: '/homecare/getJadwalPemeriksaanHomecare',
+            url: '{{ url("/homecare/getJadwalPemeriksaanHomecare") }}',
             data: { _token:token, waktu:waktu, tgl:tgl },
             success:function(data){
                 $('#jadwal').html(data.html);

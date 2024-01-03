@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0">
-                            <form method="POST" action="/spr/landingpage/promosi" enctype="multipart/form-data">
+                            <form method="POST" action="{{ url('/spr/landingpage/promosi') }}" enctype="multipart/form-data">
                                 {{ csrf_field() }}
                                 <div class="row">
                                     <div class="col-sm-6">

@@ -20,6 +20,7 @@ use App\Http\Controllers\Landingpage\LandingpageKegiatan;
 use App\Http\Controllers\Landingpage\LandingpageLayanankami;
 use App\Http\Controllers\Landingpage\LandingpagePromosi;
 use App\Http\Controllers\Landingpage\LandingpageSlide;
+use App\Http\Controllers\Pelaporan\Pelaporan;
 
 /*
 |--------------------------------------------------------------------------
@@ -202,3 +203,5 @@ Route::post('/registrasi/getDataKemasan', [Registrasi::class, 'getDataKemasan'])
 // admin route
 Route::get('/spr/master/paketpemeriksaan/paginationmstpaketpemeriksaan', [MstPaketPemeriksaan::class, 'paginationGridPaketPemeriksaan']);
 Route::resource('/spr/master/paketpemeriksaan', MstPaketPemeriksaan::class);
+Route::get('/spr/pelaporan', [Pelaporan::class, 'index']);
+Route::post('/spr/pelaporan/cetakpelaporanregistrasibayar', [Pelaporan::class, 'cetakLaporanRegistrasiPembayaran']);

@@ -24,7 +24,7 @@ class Pasien extends Controller
      */
     public function index()
     {
-        $pasien = DB::table('pasien')->paginate(10);
+        $pasien = DB::table('pasien')->where('user_id', Auth::id())->paginate(10);
 
         return view('pasien.index', compact('pasien'));
     }

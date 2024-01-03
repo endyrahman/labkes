@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0 mt-4">
-                            <form method="POST" action="/master/parameterpemeriksaan/update/2">
+                            <form method="POST" action="{{ url('/master/parameterpemeriksaan/update/2') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <input id="jenis_lab_id" name="jenis_lab_id" class="form-control" value="2" type="hidden">
                                 <input id="parameter_id" name="parameter_id" class="form-control" value="{{ $data->id }}" type="hidden">

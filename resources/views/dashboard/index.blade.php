@@ -16,8 +16,8 @@
                                     <div class="w-summary-info">
                                         <h5>Laboratorium Klinik</h5>
                                     </div>
-                                    <a href="/registrasi/klinik/create" class="btn btn-dark mt-4">Registrasi Online</a>
-                                    <a href="/registrasi/klinik" class="btn btn-info mt-4">Lihat Registrasi</a>
+                                    <a href="{{ url('/registrasi/klinik/create') }}" class="btn btn-dark mt-4">Registrasi Online</a>
+                                    <a href="{{ url('/registrasi/klinik') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                                 </div>
                             </div>
                         </div>
@@ -29,8 +29,8 @@
                                     <div class="w-summary-info">
                                         <h5>Laboratorium Kimia</h5>
                                     </div>
-                                    <a href="/registrasi/kimia/create" class="btn btn-dark mt-4">Registrasi Online</a>
-                                    <a href="/registrasi/kimia" class="btn btn-info mt-4">Lihat Registrasi</a>
+                                    <a href="{{ url('/registrasi/kimia/create') }}" class="btn btn-dark mt-4">Registrasi Online</a>
+                                    <a href="{{ url('/registrasi/kimia') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                                 </div>
                             </div>
                         </div>
@@ -42,8 +42,8 @@
                                     <div class="w-summary-info">
                                         <h5>Laboratorium Mikrobiologi</h5>
                                     </div>
-                                    <a href="/registrasi/mikrobiologi/create" class="btn btn-dark mt-4">Registrasi Online</a>
-                                    <a href="/registrasi/mikrobiologi" class="btn btn-info mt-4">Lihat Registrasi</a>
+                                    <a href="{{ url('/registrasi/mikrobiologi/create') }}" class="btn btn-dark mt-4">Registrasi Online</a>
+                                    <a href="{{ url('/registrasi/mikrobiologi') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                                 </div>
                             </div>
                         </div>
@@ -57,8 +57,8 @@
                                     <div class="w-summary-info">
                                         <h5>Homecare</h5>
                                     </div>
-                                    <a href="/registrasi/homecare/create" class="btn btn-dark mt-4">Registrasi Homecare</a>
-                                    <a href="/registrasi/homecare" class="btn btn-info mt-4">Lihat Registrasi</a>
+                                    <a href="{{ url('/registrasi/homecare/create') }}" class="btn btn-dark mt-4">Registrasi Homecare</a>
+                                    <a href="{{ url('/registrasi/homecare') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                                 </div>
                             </div>
                         </div>

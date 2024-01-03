@@ -5,7 +5,7 @@
                 <a href="javascript:void(0)">{{ $val->nama_menu }}</a><span class="menu-arrow"></span>
                 <ul class="submenu">
                     @foreach ($val->sub_menu as $valsubmenu)
-                        <li><a href="{{ $valsubmenu->url }}" class="sub-menu-item">{{ $valsubmenu->nama_menu }}</a></li>
+                        <li><a href="{{ url($valsubmenu->url) }}" class="sub-menu-item">{{ $valsubmenu->nama_menu }}</a></li>
                     @endforeach
                 </ul>
             </li>

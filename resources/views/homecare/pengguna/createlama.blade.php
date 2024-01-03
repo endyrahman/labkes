@@ -437,7 +437,7 @@ max-width: 200px;
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/getJadwalPemeriksaan',
+            url: "{{ url('/registrasi/getJadwalPemeriksaan') }}",
             data: { _token:token, waktu:waktu, tgl:tgl },
             success:function(data){
                 $('#jadwal').html(data);

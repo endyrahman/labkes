@@ -53,7 +53,7 @@
                     </td>
                     <td>
                         @if ($val->status_bayar != 2)
-                            <a href="/pembayaran/homecare/create/{{$val->homecare_id}}" class="btn btn-success p-1">Pembayaran</a></td>
+                            <a href="{{ url('/pembayaran/homecare/create/'.$val->homecare_id) }}" class="btn btn-success p-1">Pembayaran</a></td>
                         @endif
                 </tr>
                 @endforeach

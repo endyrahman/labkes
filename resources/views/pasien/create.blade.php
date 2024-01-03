@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0">
-                            <form method="POST" action="/pasienbaru" id="pasien-form">
+                            <form method="POST" action="{{ url('/pasienbaru') }}" id="pasien-form">
                                 {{ csrf_field() }}
                                 <div class="row">
                                     <div class="col-sm-6">

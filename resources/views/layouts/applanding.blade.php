@@ -32,8 +32,8 @@
         <header id="topnav" class="defaultscroll sticky">
             <div class="container">
                 <a class="logo" href="index.html" style="display:none;">
-                    <img src="landingpage/assets/images/logo-dark.png" height="24" class="logo-light-mode" alt="">
-                    <img src="landingpage/assets/images/logo-light.png" height="24" class="logo-dark-mode" alt="">
+                    <img src="{{ asset('landingpage/assets/images/logo-dark.png') }}" height="24" class="logo-light-mode" alt="">
+                    <img src="{{ asset('landingpage/assets/images/logo-light.png') }}" height="24" class="logo-dark-mode" alt="">
                 </a>
 
                 <div class="menu-extras">
@@ -87,7 +87,7 @@
                             <div class="row">
                                 <div class="col-lg-4 col-12 mb-0 mb-md-4 pb-0 pb-md-2">
                                     <a href="#" class="logo-footer" style="display: none;">
-                                        <img src="landingpage/assets/images/logo-light.png" height="24" alt="">
+                                        <img src="{{ asset('landingpage/assets/images/logo-light.png') }}" height="24" alt="">
                                     </a>
                                     <p class="mt-4">Untuk informasi lebih lanjut dapat menfollow akun media sosial kami</p>
                                     <ul class="list-unstyled social-icon foot-social-icon mb-0 mt-4">
@@ -101,7 +101,7 @@
                                     @foreach (App\Models\Landingpage\MenuMdl::getMenu() as $val)
                                         @if ($val->level == 1)
                                             @foreach ($val->sub_menu as $valsubmenu)
-                                                <li><a href="{{ $valsubmenu->url }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> {{ $valsubmenu->nama_menu }}</a></li>
+                                                <li><a href="{{ url($valsubmenu->url) }}" class="text-foot"><i class="uil uil-angle-right-b me-1"></i> {{ $valsubmenu->nama_menu }}</a></li>
                                             @endforeach
                                         @endif
                                     @endforeach
@@ -199,7 +199,7 @@
                         <div class="container-fluid px-0">
                             <div class="row align-items-center g-0">
                                 <div class="col-lg-12 col-md-12">
-                                    <form class="daftar-form p-4 pt-0" method="POST" action="/pendaftaran/storependaftaran">
+                                    <form class="daftar-form p-4 pt-0" method="POST" action="{{ url('/pendaftaran/storependaftaran') }}">
                                         @csrf
                                         <div class="row">
                                             <div class="col-lg-12">
@@ -240,9 +240,9 @@
                                             </div>
                                             <div class="col-lg-12">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Email <span class="text-danger">*</span><span class="erroremail" style="color: red; display: none"></span></label>
+                                                    <label class="form-label">Email <span class="erroremail" style="color: red; display: none"></span></label>
                                                     <div class="form-icon position-relative">
-                                                        <input type="email" class="form-control ps-3" placeholder="Email" id="email" name="email" required>
+                                                        <input type="email" class="form-control ps-3" placeholder="Email" id="email" name="email">
                                                     </div>
                                                 </div>
                                             </div>
@@ -277,7 +277,7 @@
                         <div class="container-fluid px-0">
                             <div class="row align-items-center g-0">
                                 <div class="col-lg-6 col-md-5">
-                                    <img src="landingpage/assets/images/user/recovery.svg" class="img-fluid" alt="">
+                                    <img src="{{ asset('landingpage/assets/images/user/recovery.svg') }}" class="img-fluid" alt="">
                                 </div><!--end col-->
 
                                 <div class="col-lg-6 col-md-7">
@@ -311,13 +311,13 @@
 
         <a href="#" onclick="topFunction()" id="back-to-top" class="back-to-top fs-5"><i data-feather="arrow-up" class="fea icon-sm icons align-middle"></i></a>
 
-        <script src="landingpage/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="landingpage/assets/libs/tiny-slider/min/tiny-slider.js"></script>
-        <script src="landingpage/assets/libs/tobii/js/tobii.min.js"></script>
-        <script src="landingpage/assets/libs/feather-icons/feather.min.js"></script>
-        <script src="landingpage/assets/js/plugins.init.js"></script>
-        <script src="landingpage/assets/js/easy_background.js"></script>
-        <script src="landingpage/assets/js/app.js"></script>
+        <script src="{{ asset('landingpage/assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('landingpage/assets/libs/tiny-slider/min/tiny-slider.js') }}"></script>
+        <script src="{{ asset('landingpage/assets/libs/tobii/js/tobii.min.js') }}"></script>
+        <script src="{{ asset('landingpage/assets/libs/feather-icons/feather.min.js') }}"></script>
+        <script src="{{ asset('landingpage/assets/js/plugins.init.js') }}"></script>
+        <script src="{{ asset('landingpage/assets/js/easy_background.js') }}"></script>
+        <script src="{{ asset('landingpage/assets/js/app.js') }}"></script>
 
         <script>
             var arrslide = <?php if (isset($arrslide)) { echo json_encode($arrslide); } ?>;
@@ -348,7 +348,7 @@
 
                 $.ajax({
                     type:'POST',
-                    url: '/pendaftaran/ceknohp',
+                    url: '{{ url("/pendaftaran/ceknohp") }}',
                     data: { _token:token, no_hp:no_hp },
                     success:function(data){
                         if (data.status == '200') {
@@ -369,7 +369,7 @@
 
                 $.ajax({
                     type:'POST',
-                    url: '/pendaftaran/cekemail',
+                    url: '{{ url("/pendaftaran/cekemail") }}',
                     data: { _token:token, email:email },
                     success:function(data){
                         if (data.status == '200') {

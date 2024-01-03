@@ -27,7 +27,11 @@
 
     function paginationKegiatan(page) {
         $.ajax({
-            url:"/kegiatan/paginationkegiatan?pagekegiatan="+page,
+            url: "{{ url('/kegiatan/paginationkegiatan') }}",
+            type: 'GET',
+            data: {
+                pagekegiatan: page
+            },
             success:function(datas)
             {
                 $('#listkegiatan').html('');

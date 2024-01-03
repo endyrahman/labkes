@@ -28,7 +28,7 @@
     <link href="{{ asset('backend/plugins/noUiSlider/nouislider.min.css') }}" rel="stylesheet" type="text/css">
     <!-- END THEME GLOBAL STYLES -->
 
-    <link href="{{ asset('backend/assets/css/components/custom-modal.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend/assets/css/components/custinputmaskom-modal.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="{{ asset('backend/assets/css/widgets/modules-widgets.css') }}">
 
     <!--  BEGIN CUSTOM STYLE FILE  -->
@@ -54,6 +54,9 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('backend/assets/css/forms/switches.css') }}">
 
     <link href="{{ asset('backend/plugins/notification/snackbar/snackbar.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('backend/assets/css/components/tabs-accordian/custom-accordions.css') }}" rel="stylesheet" type="text/css" />
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <!-- BEGIN LOADER -->
@@ -122,7 +125,7 @@
 
                 <ul class="navbar-nav theme-brand flex-row  text-center">
                     <li class="nav-item theme-text">
-                        <a href="/dashboard" class="nav-link"> LABKES ONLINE </a>
+                        <a href="{{ url('/dashboard') }}" class="nav-link"> LABKES ONLINE </a>
                     </li>
                     <li class="nav-item toggle-sidebar">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather sidebarCollapse feather-chevrons-left"><polyline points="11 17 6 12 11 7"></polyline><polyline points="18 17 13 12 18 7"></polyline></svg>
@@ -135,7 +138,7 @@
                     </li>
                     @if (Auth::user()->role_id == 1)
                     <li class="menu">
-                        <a href="/spr/dashboard" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/spr/dashboard') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 <span>Dashboard</span>
@@ -145,7 +148,7 @@
                     @endif
                     @if (Auth::user()->role_id == 4)
                     <li class="menu">
-                        <a href="/dashboard" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/dashboard') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-home"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                                 <span>Dashboard</span>
@@ -164,21 +167,21 @@
                         </a>
                         <ul class="collapse submenu recent-submenu mini-recent-submenu list-unstyled show" id="pemeriksaan-sampel" data-parent="#accordionExample">
                             <li>
-                                <a href="/registrasi/klinik"> Lab Klinik </a>
+                                <a href="{{ url('/registrasi/klinik') }}"> Lab Klinik </a>
                             </li>
                             <li>
-                                <a href="/registrasi/kimia"> Lab Kimia </a>
+                                <a href="{{ url('/registrasi/kimia') }}"> Lab Kimia </a>
                             </li>
                             <li>
-                                <a href="/registrasi/mikrobiologi"> Lab Mikrobiologi </a>
+                                <a href="{{ url('/registrasi/mikrobiologi') }}"> Lab Mikrobiologi </a>
                             </li>
                             <li>
-                                <a href="/registrasi/biomolekuler"> Lab Biomolekuler </a>
+                                <a href="{{ url('/registrasi/biomolekuler') }}"> Lab Biomolekuler </a>
                             </li>
                         </ul>
                     </li>
                     <li class="menu">
-                        <a href="/registrasi/homecare" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/registrasi/homecare') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pocket"><path d="M4 3h16a2 2 0 0 1 2 2v6a10 10 0 0 1-10 10A10 10 0 0 1 2 11V5a2 2 0 0 1 2-2z"></path><polyline points="8 10 12 14 16 10"></polyline></svg>
                                 <span>Home Care</span>
@@ -197,15 +200,15 @@
                         </a>
                         <ul class="collapse submenu recent-submenu mini-recent-submenu list-unstyled" id="pembayaran_lab" data-parent="#pembayaran_lab">
                             <li>
-                                <a href="/pembayaran/laboratorium"> Registrasi Online </a>
+                                <a href="{{ url('/pembayaran/laboratorium') }}"> Registrasi Online </a>
                             </li>
                             <li>
-                                <a href="/pembayaran/homecare"> Homecare </a>
+                                <a href="{{ url('/pembayaran/homecare') }}"> Homecare </a>
                             </li>
                         </ul>
                     </li>
                     <li class="menu">
-                        <a href="/hasil" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/hasil') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                                 <span>Hasil Lab</span>
@@ -213,7 +216,7 @@
                         </a>
                     </li>
                     <li class="menu">
-                        <a href="/pasien" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/pasien') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                                 <span>Data Pasien</span>
@@ -223,7 +226,7 @@
                     @endif
                     @if (Auth::user()->role_id == 1)
                     <li class="menu">
-                        <a href="/registrasi/verifikasi" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/registrasi/verifikasi') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                                 <span>Registrasi Online</span>
@@ -231,7 +234,7 @@
                         </a>
                     </li>
                     <li class="menu">
-                        <a href="/homecare/verifikasi" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/homecare/verifikasi') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pocket"><path d="M4 3h16a2 2 0 0 1 2 2v6a10 10 0 0 1-10 10A10 10 0 0 1 2 11V5a2 2 0 0 1 2-2z"></path><polyline points="8 10 12 14 16 10"></polyline></svg>
                                 <span>Home Care</span>
@@ -250,20 +253,20 @@
                         </a>
                         <ul class="collapse submenu recent-submenu mini-recent-submenu list-unstyled" id="pembayaran_verifikasi_lab" data-parent="#pembayaran_verifikasi_lab">
                             <li>
-                                <a href="/pembayaran/verifikasi/laboratorium"> Registrasi Online </a>
+                                <a href="{{ url('/pembayaran/verifikasi/laboratorium') }}"> Registrasi Online </a>
                             </li>
                             <li>
-                                <a href="/pembayaran/verifikasi/homecare"> Homecare </a>
+                                <a href="{{ url('/pembayaran/verifikasi/homecare') }}"> Homecare </a>
                             </li>
                         </ul>
-
-
-<!--                         <a href="/pembayaran/verifikasi" aria-expanded="false" class="dropdown-toggle">
+                    </li>
+                    <li class="menu">
+                        <a href="{{ url('/spr/pelaporan') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-dollar-sign"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                                <span>Pembayaran</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pocket"><path d="M4 3h16a2 2 0 0 1 2 2v6a10 10 0 0 1-10 10A10 10 0 0 1 2 11V5a2 2 0 0 1 2-2z"></path><polyline points="8 10 12 14 16 10"></polyline></svg>
+                                <span>Pelaporan</span>
                             </div>
-                        </a> -->
+                        </a>
                     </li>
                     @endif
 
@@ -271,7 +274,7 @@
                         <div class="heading"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-circle"><circle cx="12" cy="12" r="10"></circle></svg><span>Penggaturan</span></div>
                     </li>
                     <li class="menu">
-                        <a href="/pengguna" aria-expanded="false" class="dropdown-toggle">
+                        <a href="{{ url('/pengguna') }}" aria-expanded="false" class="dropdown-toggle">
                             <div class="">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                 <span>Pengguna</span>
@@ -291,18 +294,17 @@
                         </a>
                         <ul class="collapse submenu recent-submenu mini-recent-submenu list-unstyled" id="master-jenis-pemeriksaan" data-parent="#accordionExample">
                             <li>
-                                <!-- <a href="/master/jenispemeriksaan"> Jenis Pemeriksaan </a> -->
-                                <a href="/spr/master/paketpemeriksaan"> Paket Pemeriksaan </a>
+                                <a href="{{ url('/spr/master/paketpemeriksaan') }}"> Paket Pemeriksaan </a>
                                 <a href="#page-master-parameter" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"> Parameter Pemeriksaan <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg> </a>
                                 <ul class="collapse list-unstyled sub-submenu" id="page-master-parameter" data-parent="#master-jenis-pemeriksaan">
                                     <li>
-                                        <a href="/master/parameterpemeriksaan/1"> Klinik </a>
+                                        <a href="{{ url('/master/parameterpemeriksaan/1') }}"> Klinik </a>
                                     </li>
                                     <li>
-                                        <a href="/master/parameterpemeriksaan/2"> Kimia </a>
+                                        <a href="{{ url('/master/parameterpemeriksaan/2') }}"> Kimia </a>
                                     </li>
                                     <li>
-                                        <a href="/master/parameterpemeriksaan/3"> Mikrobiologi </a>
+                                        <a href="{{ url('/master/parameterpemeriksaan/3') }}"> Mikrobiologi </a>
                                     </li>
                                 </ul>
                             </li>
@@ -320,14 +322,14 @@
                         </a>
                         <ul class="collapse submenu recent-submenu mini-recent-submenu list-unstyled" id="menu-landing-page" data-parent="#accordionExample">
                             <li>
-                                <a href="/spr/landingpage/menu"> Menu </a>
+                                <a href="{{ url('/spr/landingpage/menu') }}"> Menu </a>
                             </li>
                             <li>
                                 <a href="#pages-halaman-depan" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"> Halaman Depan <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right"><polyline points="9 18 15 12 9 6"></polyline></svg> </a>
                                 <ul class="collapse list-unstyled sub-submenu" id="pages-halaman-depan" data-parent="#menu-landing-page">
                                     @foreach (App\Models\Landingpage\MenuMdl::getMenuHalamanDepan() as $val)
                                     <li>
-                                        <a href="{{ $val->url }}"> {{ $val->nama }} </a>
+                                        <a href="{{ url('$val->url') }}"> {{ $val->nama }} </a>
                                     </li>
                                     @endforeach
                                 </ul>
@@ -341,9 +343,11 @@
             </nav>
 
         </div>
-        <!--  END SIDEBAR  -->
 
-        <!--  BEGIN CONTENT AREA  -->
+        <script src="{{ asset('backend/assets/js/libs/jquery-3.1.1.min.js') }}"></script>
+        <script src="{{ asset('backend/plugins/input-mask/jquery.inputmask.bundle.min.js') }}"></script>
+        <script src="{{ asset('backend/plugins/input-mask/input-mask.js') }}"></script>
+
         <div id="content" class="main-content">
             <div class="layout-px-spacing">
                 <div class="row layout-top-spacing">
@@ -359,14 +363,9 @@
                 </div>
             </div>
         </div>
-        <!--  END CONTENT AREA  -->
-
 
     </div>
-    <!-- END MAIN CONTAINER -->
 
-    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
-    <script src="{{ asset('backend/assets/js/libs/jquery-3.1.1.min.js') }}"></script>
     <script src="{{ asset('backend/bootstrap/js/popper.min.js') }}"></script>
     <script src="{{ asset('backend/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('backend/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
@@ -377,24 +376,17 @@
         });
     </script>
     <script src="{{ asset('backend/assets/js/custom.js') }}"></script>
-    <!-- END GLOBAL MANDATORY SCRIPTS -->
-
-    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
     <script src="{{ asset('backend/plugins/apex/apexcharts.min.js') }}"></script>
     <script src="{{ asset('backend/assets/js/dashboard/dash_1.js') }}"></script>
-    <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM SCRIPTS -->
-    <!-- DT -->
     <script src="{{ asset('backend/plugins/table/datatable/datatables.js') }}"></script>
     <script src="{{ asset('backend/plugins/file-upload/file-upload-with-preview.min.js') }}"></script>
-
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.1.1/mapbox-gl.js'></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
     <script src="{{ asset('backend/plugins/highlight/highlight.pack.js') }}"></script>
     <script src="{{ asset('js/datatableregistrasi.js') }}"></script>
     <script src="{{ asset('backend/plugins/notification/snackbar/snackbar.min.js') }}"></script>
+    <script src="{{ asset('backend/assets/js/components/ui-accordions.js') }}"></script>
     <script>
-        // Klinik
-
         var d_1options3 = {
             chart: {
               id: 'sparkline1',

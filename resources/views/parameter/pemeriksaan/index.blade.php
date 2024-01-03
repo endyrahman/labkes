@@ -54,7 +54,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/pemeriksaan/countCetakDownloadHasil',
+            url: '{{ url("/pemeriksaan/countCetakDownloadHasil") }}',
             data: { _token:token, pemeriksaan_id:pemeriksaan_id },
             success:function(data){
                 $('#checklist').html(data);

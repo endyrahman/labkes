@@ -76,7 +76,7 @@
                             </div>
                         </div>
                         <hr>
-                        <form method="POST" action="/pemeriksaan/kimia/storekimia">
+                        <form method="POST" action="{{ url('/pemeriksaan/kimia/storekimia') }}">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                             <input id="jenis_lab_id" name="jenis_lab_id" class="form-control" value="2" type="hidden">
                             <div class="row">
@@ -228,7 +228,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/pemeriksaan/getDataJenisPemeriksaan',
+            url: "{{ url('/pemeriksaan/getDataJenisPemeriksaan') }}",
             data: { _token:token, jenis_pemeriksaan_id:jenis_pemeriksaan_id, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#checklist').html(data);
@@ -250,7 +250,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/pemeriksaan/getJadwalPemeriksaan',
+            url: "{{ url('/pemeriksaan/getJadwalPemeriksaan') }}",
             data: { _token:token, waktu:waktu, tgl:tgl },
             success:function(data){
                 $('#jadwal').html(data);

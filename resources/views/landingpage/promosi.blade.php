@@ -12,7 +12,7 @@
                             <h6 class="text-white-50 tag mt-1 mb-0">Photography</h6>
                         </div>
                         <div class="icons text-center">
-                            <a href="/img/{{$val->nama_file}}" class="work-icon bg-white d-inline-flex rounded-pill lightbox"><i data-feather="camera" class="fea icon-sm image-icon"></i></a>
+                            <a href="{{ url('/img/'.$val->nama_file) }}" class="work-icon bg-white d-inline-flex rounded-pill lightbox"><i data-feather="camera" class="fea icon-sm image-icon"></i></a>
                         </div>
                     </div>
                 </div>
@@ -42,7 +42,11 @@
 
     function paginationLpPromosi(page) {
         $.ajax({
-            url:"/paginationlppromosi?pagelppromosi="+page,
+            url: "{{ url('/paginationlppromosi') }}",
+            type: 'GET',
+            data: {
+                pagelppromosi: page
+            },
             success:function(datas)
             {
                 $('#lppromosi').html('');

@@ -9,7 +9,7 @@
     <td>{{ $val->nama_pasien }}</td>
     <td class="text-center">{{ date('d-m-Y', strtotime($val->tgl_lahir)) }}</td>
     <td class="text-center">
-        <a href="/pasien/{{$val->id}}/edit" class="btn btn-warning btn-sm p-1">Edit</a>
+        <a href="{{ url('/pasien/'.$val->id.'/edit') }}" class="btn btn-warning btn-sm p-1">Edit</a>
     </td>
 </tr>
 @endforeach

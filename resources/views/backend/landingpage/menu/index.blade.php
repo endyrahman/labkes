@@ -35,7 +35,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/registrasi/countCetakDownloadHasil',
+            url: "{{ url('/registrasi/countCetakDownloadHasil') }}",
             data: { _token:token, pemeriksaan_id:pemeriksaan_id },
             success:function(data){
                 $('#counterHasil').text(data.cetak);

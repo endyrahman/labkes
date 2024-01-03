@@ -23,7 +23,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <a href="/registrasi/verifikasi" class="btn btn-info mt-4">Lihat Registrasi</a>
+                        <a href="{{ url('/registrasi/verifikasi') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                     </div>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <a href="/registrasi/verifikasi" class="btn btn-info mt-4">Lihat Registrasi</a>
+                        <a href="{{ url('/registrasi/verifikasi') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <a href="/registrasi/verifikasi" class="btn btn-info mt-4">Lihat Registrasi</a>
+                        <a href="{{ url('/registrasi/verifikasi') }}" class="btn btn-info mt-4">Lihat Registrasi</a>
                     </div>
                 </div>
             </div>
@@ -113,7 +113,7 @@
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <a href="/homecare/verifikasi" class="btn btn-warning mt-4">Lihat Registrasi</a>
+                        <a href="{{ url('/homecare/verifikasi') }}" class="btn btn-warning mt-4">Lihat Registrasi</a>
                     </div>
                 </div>
             </div>

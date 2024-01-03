@@ -229,7 +229,7 @@
 
         $.ajax({
             type:'POST',
-            url: '/pemeriksaan/getDataJenisPemeriksaan',
+            url: "{{ url('/pemeriksaan/getDataJenisPemeriksaan') }}",
             data: { _token:token, jenis_pemeriksaan_id:jenis_pemeriksaan_id, jenis_lab_id:jenis_lab_id },
             success:function(data){
                 $('#checklist').html(data);

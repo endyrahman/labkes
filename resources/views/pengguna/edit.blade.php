@@ -17,7 +17,7 @@
                     <div class="col-lg-12 mx-auto">
                         <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0 mt-4">
-                                <form method="POST" action="/pengguna/updatepengguna">
+                                <form method="POST" action="{{ url('/pengguna/updatepengguna') }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <input type="hidden" name="user_id" value="{{ $user->id }}" />
                                     <div class="row">
