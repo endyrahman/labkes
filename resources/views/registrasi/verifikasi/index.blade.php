@@ -27,7 +27,7 @@
                     <tr>
                         <th>No</th>
                         <th>No. Registrasi</th>
-                        <th>Nama</th>
+                        <th>Nama Pengguna</th>
                         <th>Jadwal Datang</th>
                         <th>Jenis Lab</th>
                         <th>Total Biaya</th>
@@ -213,7 +213,17 @@
                         <label for="no_registrasi">No. Registrasi</label>
                         <input type="text" class="form-control" id="detail_no_registrasi" name="detail_no_registrasi" readonly>
                     </div>
+                    <div class="form-group col-md-6">
+                        <label for="no_registrasi">Nama Pengguna</label>
+                        <input type="text" class="form-control" id="detail_nama_pengguna" name="detail_nama_pengguna" readonly>
+                    </div>
                     <input type="hidden" class="form-control" id="detail_pemeriksaan_id" name="detail_pemeriksaan_id" readonly>
+                </div>
+                <div class="form-row mb-4">
+                    <div class="form-group col-md-6">
+                        <label for="no_registrasi">No. Registrasi</label>
+                        <input type="text" class="form-control" id="detail_no_registrasi" name="detail_no_registrasi" readonly>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table table-bordered mb-4">
@@ -285,11 +295,12 @@
 
         $.ajax({
             type:'POST',
-            url: "{{ url('/registrasi/getDetailPemeriksaan') }}",
+            url: '{{ url("/registrasi/getDetailPemeriksaan") }}',
             data: { _token:token, id:id, jenis_lab_id:jenis_lab_id, user_id:user_id },
             success:function(data){
                 $('#bodyDetailPemeriksaan').html('');
                 $('#bodyDetailPemeriksaan').html(data.html);
+                $('#detail_nama_pengguna').val(data.nama_lengkap);
             }
         });
     }
@@ -373,7 +384,7 @@
 
         $.ajax({
             type:'POST',
-            url: {{ url('/registrasi/getDataPembayaran') }},
+            url: '{{ url("/registrasi/getDataPembayaran") }}',
             data: { _token:token, pemeriksaan_id:pemeriksaan_id },
             success:function(data) {
                 $('#mdlValidasiBayar').modal('toggle');

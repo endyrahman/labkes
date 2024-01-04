@@ -592,6 +592,7 @@ class Registrasi extends Controller
         $jenis_lab_id = $request->jenis_lab_id;
         $user_id = $request->user_id;
 
+        $pemeriksaan = DB::table('view_pemeriksaan')->where('id', $pemeriksaan_id)->first();
         $detail_pemeriksaan = DB::table('detail_pemeriksaan')->where('pemeriksaan_id', $pemeriksaan_id)->get();
 
         $total = 0;
@@ -621,7 +622,6 @@ class Registrasi extends Controller
                 ->where('pemeriksaan_id', $pemeriksaan_id)->first();
             $jmlh_sampel = $detail_kimia->jmlh_sampel;
             $nama_sampel = $detail_kimia->nama_sampel;
-            $nama = Auth::user()->nama_lengkap;
 
             $html .= '<tr>';
             $html .= '<th colspan="2">Subtotal</th>';
@@ -660,6 +660,7 @@ class Registrasi extends Controller
         }
 
         $data['html'] = $html;
+        $data['nama_lengkap'] = $pemeriksaan->nama_lengkap;
 
         return response()->json($data);
     }

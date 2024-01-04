@@ -6,7 +6,7 @@
 <tr>
     <td class="text-center">{{ $i++ }}</td>
     <td class="text-center">{{ $val->no_registrasi }}</td>
-    <td>{{ $val->nama_pasien }}</td>
+    <td>{{ $val->nama_lengkap }}</td>
     <td class="text-center">{{ date('d-m-Y H:i', strtotime($val->tgl_waktu_kunjungan)) }}</td>
     <td>
         @if ($val->jenis_lab_id == 1)

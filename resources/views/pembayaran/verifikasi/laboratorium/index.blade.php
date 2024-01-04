@@ -221,7 +221,7 @@
 
         $.ajax({
             type:'POST',
-            url: "{{ url('/registrasi/getDataPembayaran') }}",
+            url: '{{ url("/registrasi/getDataPembayaran") }}',
             data: { _token:token, pemeriksaan_id:pemeriksaan_id },
             success:function(data) {
                 $('#mdlValidasiBayar').modal('toggle');
