@@ -14,8 +14,10 @@ use App\Models\DetailKimia\DetailKimiaMdl;
 use App\Models\DetailMikrobiologi\DetailMikrobiologiMdl;
 use App\Models\Antrian\Antrian;
 use App\Models\JenisSampel\JenisSampel;
+use App\Models\Temp\TempPaketPemeriksaanTbl;
+use App\Models\Temp\TempParameterPemeriksaanTbl;
 use Illuminate\Support\Facades\Redirect;
-use Barryvdh\DomPDF\Facade as PDF;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Redis;
 
@@ -62,22 +64,21 @@ class Registrasi extends Controller
 
     public function createKlinik() {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
 
-        $redis->del("paket_user_".Auth::id());
-        $redis->del("parameter_user_".Auth::id());
+        DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
+        DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(1);
         $klinik = DB::table('parameter_pemeriksaan_klinik')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
+
+        $paketterpilih = [];
+        $parameterterpilih = [];
 
         return view('registrasi.klinik.create', compact('pemeriksaan', 'klinik', 'paketterpilih', 'parameterterpilih'));
     }
 
     public function storeklinik(Request $request) {
         $user = Auth::user();
-        $redis = Redis::connection();
 
         DB::beginTransaction();
 
@@ -85,8 +86,9 @@ class Registrasi extends Controller
         $pasien_id = $request->pasien_id;
         $tgl_waktu_kunjungan = $request->tglwaktukunjungan;
         $total_biaya = str_ireplace(".", "", $request->total_biaya);
-        $paket_pemeriksaan = $redis->hGetAll("paket_user_".Auth::id());
-        $parameter_pemeriksaan = $redis->hGetAll("parameter_user_".Auth::id());
+
+        $paket_pemeriksaan = DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->get();
+        $parameter_pemeriksaan = DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->get();
 
         $no_urut = PemeriksaanTbl::where(DB::raw('DATE_FORMAT(tgl_waktu_kunjungan,"%Y-%m-%d")'), date('Y-m-d', strtotime($tgl_waktu_kunjungan)))->max('no_urut');
         $nourut = $no_urut + 1;
@@ -103,27 +105,27 @@ class Registrasi extends Controller
             ]);
 
             if ($paket_pemeriksaan) {
-                foreach ($paket_pemeriksaan as $key => $val) {
-                    $paket = DB::table('paket_pemeriksaan')->where('id', $key)->select('nama_pemeriksaan')->first();
+                foreach ($paket_pemeriksaan as $val) {
+                    $paket = DB::table('paket_pemeriksaan')->where('id', $val->paket_pemeriksaan_id)->select('nama_pemeriksaan')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan->id,
                         "jenis_pemeriksaan" => 1,
                         "nama_pemeriksaan" => $paket->nama_pemeriksaan,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->paket_pemeriksaan_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
 
             if ($parameter_pemeriksaan) {
-                foreach ($parameter_pemeriksaan as $key => $val) {
-                    $paket = DB::table('parameter_pemeriksaan_klinik')->where('id', $key)->select('nama_parameter')->first();
+                foreach ($parameter_pemeriksaan as $val) {
+                    $paket = DB::table('parameter_pemeriksaan_klinik')->where('id', $val->parameter_id)->select('nama_parameter')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan->id,
                         "jenis_pemeriksaan" => 2,
                         "nama_pemeriksaan" => $paket->nama_parameter,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->parameter_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
@@ -159,10 +161,9 @@ class Registrasi extends Controller
 
     public function editKlinik($pemeriksaan_id) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
 
-        $redis->del("paket_user_".Auth::id());
-        $redis->del("parameter_user_".Auth::id());
+        DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
+        DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
         $data = DB::table('view_pemeriksaan')->where('id', $pemeriksaan_id)->first();
 
@@ -170,23 +171,43 @@ class Registrasi extends Controller
 
         foreach ($detailPemeriksaan as $val) {
             if ($val->jenis_pemeriksaan == 1) {
-                $redis->hSet("paket_user_".Auth::id(), $val->paket_parameter_id, $val->harga);
+                TempPaketPemeriksaanTbl::create([
+                    "user_id" => Auth::id(),
+                    "paket_pemeriksaan_id" => $val->paket_parameter_id,
+                    "biaya" => $val->harga
+                ]);
             } else {
-                $redis->hSet("parameter_user_".Auth::id(), $val->paket_parameter_id, $val->harga);
+                TempParameterPemeriksaanTbl::create([
+                    "user_id" => Auth::id(),
+                    "parameter_id" => $val->paket_parameter_id,
+                    "biaya" => $val->harga
+                ]);
             }
+        }
+
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
         }
 
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(1);
         $klinik = DB::table('parameter_pemeriksaan_klinik')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
+        $paketterpilih = $arrpaket;
+        $parameterterpilih = $arrparameter;
 
         return view('registrasi.klinik.edit', compact('pemeriksaan', 'klinik', 'paketterpilih', 'parameterterpilih', 'data'));
     }
 
     public function updateKlinik(Request $request) {
         $user = Auth::user();
-        $redis = Redis::connection();
 
         DB::beginTransaction();
 
@@ -195,8 +216,9 @@ class Registrasi extends Controller
         $pasien_id = $request->pasien_id;
         $tgl_waktu_kunjungan = $request->tglwaktukunjungan;
         $total_biaya = str_ireplace(".", "", $request->total_biaya);
-        $paket_pemeriksaan = $redis->hGetAll("paket_user_".Auth::id());
-        $parameter_pemeriksaan = $redis->hGetAll("parameter_user_".Auth::id());
+
+        $paket_pemeriksaan = DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->get();
+        $parameter_pemeriksaan = DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->get();
 
         try {
             $uPemeriksaan = PemeriksaanTbl::where('id', $pemeriksaan_id)
@@ -216,27 +238,27 @@ class Registrasi extends Controller
             }
 
             if ($paket_pemeriksaan) {
-                foreach ($paket_pemeriksaan as $key => $val) {
-                    $paket = DB::table('paket_pemeriksaan')->where('id', $key)->select('nama_pemeriksaan')->first();
+                foreach ($paket_pemeriksaan as $val) {
+                    $paket = DB::table('paket_pemeriksaan')->where('id', $val->paket_pemeriksaan_id)->select('nama_pemeriksaan')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan_id,
                         "jenis_pemeriksaan" => 1,
                         "nama_pemeriksaan" => $paket->nama_pemeriksaan,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->paket_pemeriksaan_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
 
             if ($parameter_pemeriksaan) {
-                foreach ($parameter_pemeriksaan as $key => $val) {
-                    $paket = DB::table('parameter_pemeriksaan_klinik')->where('id', $key)->select('nama_parameter')->first();
+                foreach ($parameter_pemeriksaan as $val) {
+                    $paket = DB::table('parameter_pemeriksaan_klinik')->where('id', $val->parameter_id)->select('nama_parameter')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan_id,
                         "jenis_pemeriksaan" => 2,
                         "nama_pemeriksaan" => $paket->nama_parameter,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->parameter_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
@@ -258,10 +280,15 @@ class Registrasi extends Controller
 
     public function paginationParameterPemeriksaan(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
+
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameterterpilih = [];
+
+        foreach ($parameter as $val) {
+            array_push($parameterterpilih, $val->parameter_id);
+        }
 
         $klinik = DB::table('parameter_pemeriksaan_klinik')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
 
         return view('registrasi.klinik.parameterpemeriksaan', compact('klinik', 'parameterterpilih'))->render();
     }
@@ -314,10 +341,14 @@ class Registrasi extends Controller
 
     public function paginationPaketPemeriksaan(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $paketterpilih = [];
+
+        foreach ($paket as $val) {
+            array_push($paketterpilih, $val->paket_pemeriksaan_id);
+        }
 
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(1);
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
 
         return view('registrasi.klinik.paketpemeriksaan', compact('pemeriksaan', 'paketterpilih'))->render();
     }
@@ -384,23 +415,40 @@ class Registrasi extends Controller
         $status = $request->status;
         $jenis_lab_id = $request->jenis_lab_id;
         $paket_pemeriksaan_id = $request->paket_pemeriksaan_id;
-        $redis = Redis::connection();
 
         if ($status == 'pilih') {
-            $redis->hSet("paket_user_".Auth::id(), $paket_pemeriksaan_id, $biaya);
+            TempPaketPemeriksaanTbl::create([
+                "user_id" => Auth::id(),
+                "paket_pemeriksaan_id" => $paket_pemeriksaan_id,
+                "biaya" => $biaya 
+            ]);
         } else {
-            $redis->hdel("paket_user_".Auth::id(), $paket_pemeriksaan_id);
+            DB::table('temp_paket_pemeriksaan')->where([
+                ['user_id', '=', Auth::id()],
+                ['paket_pemeriksaan_id', '=', $paket_pemeriksaan_id]
+             ])->delete();
         }
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $paket);
-        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
+        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $arrparameter);
         $total_biaya = $total_paket + $total_parameter;
 
         $data['total_biaya'] = number_format($total_biaya, 0, ',', '.');
-        $data['paket'] = $redis->hKeys("paket_user_".Auth::id());
-        $data['parameter'] = $redis->hKeys("parameter_user_".Auth::id());
+        $data['paket'] = $arrpaket;
+        $data['parameter'] = $arrparameter;
         $data['total_paket'] = $total_paket;
         $data['total_parameter'] = $total_parameter;
 
@@ -414,23 +462,40 @@ class Registrasi extends Controller
         $status = $request->status;
         $jenis_lab_id = $request->jenis_lab_id;
         $id = $request->id;
-        $redis = Redis::connection();
 
         if ($status == 'pilih') {
-            $redis->hSet("parameter_user_".Auth::id(), $id, $biaya);
+            TempParameterPemeriksaanTbl::create([
+                "user_id" => Auth::id(),
+                "parameter_id" => $id,
+                "biaya" => $biaya
+            ]);
         } else {
-            $redis->hdel("parameter_user_".Auth::id(), $id, $biaya);
+            DB::table('temp_parameter_pemeriksaan')->where([
+                ['user_id', '=', Auth::id()],
+                ['parameter_id', '=', $id]
+             ])->delete();
         }
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $paket);
-        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
+        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $arrparameter);
         $total_biaya = $total_paket + $total_parameter;
 
         $data['total_biaya'] = number_format($total_biaya, 0, ',', '.');
-        $data['paket'] = $redis->hKeys("paket_user_".Auth::id());
-        $data['parameter'] = $redis->hKeys("parameter_user_".Auth::id());
+        $data['paket'] = $arrpaket;
+        $data['parameter'] = $arrparameter;
         $data['total_paket'] = $total_paket;
         $data['total_parameter'] = $total_parameter;
 
@@ -445,23 +510,40 @@ class Registrasi extends Controller
         $jenis_lab_id = $request->jenis_lab_id;
         $jmlh_sampel = $request->jmlh_sampel;
         $paket_pemeriksaan_id = $request->paket_pemeriksaan_id;
-        $redis = Redis::connection();
 
         if ($status == 'pilih') {
-            $redis->hSet("paket_user_".Auth::id(), $paket_pemeriksaan_id, $biaya);
+            TempPaketPemeriksaanTbl::create([
+                "user_id" => Auth::id(),
+                "paket_pemeriksaan_id" => $paket_pemeriksaan_id,
+                "biaya" => $biaya 
+            ]);
         } else {
-            $redis->hdel("paket_user_".Auth::id(), $paket_pemeriksaan_id);
+            DB::table('temp_paket_pemeriksaan')->where([
+                ['user_id', '=', Auth::id()],
+                ['paket_pemeriksaan_id', '=', $paket_pemeriksaan_id]
+             ])->delete();
         }
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $paket);
-        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
+        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $arrparameter);
         $total_biaya = $total_paket + $total_parameter;
 
         $data['total_biaya'] = number_format($total_biaya * $jmlh_sampel, 0, ',', '.');
-        $data['paket'] = $redis->hKeys("paket_user_".Auth::id());
-        $data['parameter'] = $redis->hKeys("parameter_user_".Auth::id());
+        $data['paket'] = $arrpaket;
+        $data['parameter'] = $arrparameter;
         $data['total_paket'] = $total_paket;
         $data['total_parameter'] = $total_parameter;
 
@@ -476,23 +558,40 @@ class Registrasi extends Controller
         $jenis_lab_id = $request->jenis_lab_id;
         $jmlh_sampel = $request->jmlh_sampel;
         $id = $request->id;
-        $redis = Redis::connection();
 
         if ($status == 'pilih') {
-            $redis->hSet("parameter_user_".Auth::id(), $id, $biaya);
+            TempParameterPemeriksaanTbl::create([
+                "user_id" => Auth::id(),
+                "parameter_id" => $id,
+                "biaya" => $biaya
+            ]);
         } else {
-            $redis->hdel("parameter_user_".Auth::id(), $id, $biaya);
+            DB::table('temp_parameter_pemeriksaan')->where([
+                ['user_id', '=', Auth::id()],
+                ['parameter_id', '=', $id]
+             ])->delete();
         }
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $paket);
-        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
+        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $arrparameter);
         $total_biaya = $total_paket + $total_parameter;
 
         $data['total_biaya'] = number_format($total_biaya * $jmlh_sampel, 0, ',', '.');
-        $data['paket'] = $redis->hKeys("paket_user_".Auth::id());
-        $data['parameter'] = $redis->hKeys("parameter_user_".Auth::id());
+        $data['paket'] = $arrpaket;
+        $data['parameter'] = $arrparameter;
         $data['total_paket'] = $total_paket;
         $data['total_parameter'] = $total_parameter;
 
@@ -501,13 +600,23 @@ class Registrasi extends Controller
 
     public function getDetailTotalBiaya(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
         $jenis_lab_id = $request->jenis_lab_id;
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $datapaket = $pemeriksaan->getDataPaketPemeriksaan($jenis_lab_id, $paket);
-        $dataparameter = $pemeriksaan->getDataParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
+        $datapaket = $pemeriksaan->getDataPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $dataparameter = $pemeriksaan->getDataParameterPemeriksaan($jenis_lab_id, $arrparameter);
 
         $html = '';
         $sumtotal = 0;
@@ -540,14 +649,23 @@ class Registrasi extends Controller
 
     public function getDetailTotalBiayaKimiaMikro(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
         $jenis_lab_id = $request->jenis_lab_id;
         $jmlh_sampel = $request->jmlh_sampel;
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $datapaket = $pemeriksaan->getDataPaketPemeriksaan($jenis_lab_id, $paket);
-        $dataparameter = $pemeriksaan->getDataParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+        $datapaket = $pemeriksaan->getDataPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $dataparameter = $pemeriksaan->getDataParameterPemeriksaan($jenis_lab_id, $arrparameter);
 
         $html = '';
         $sumtotal = 0;
@@ -680,28 +798,31 @@ class Registrasi extends Controller
     public function createKimia() {
         $jenisPemeriksaans = new JenisPemeriksaan();
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
 
-        $redis->del("paket_user_".Auth::id());
-        $redis->del("parameter_user_".Auth::id());
+        DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
+        DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
         $jenis = $jenisPemeriksaans->getComboJenisLabPemeriksaan(2);
         $jenisSampel = $jenisPemeriksaans->getComboJenisSample(2);
         $kemasan = $jenisPemeriksaans->getComboKemasan(2);
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(2);
         $kimia = DB::table('parameter_pemeriksaan_kimia')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
+        $paketterpilih = [];
+        $parameterterpilih = [];
 
         return view('registrasi.kimia.create', compact('jenis', 'jenisSampel', 'kemasan', 'pemeriksaan', 'kimia', 'paketterpilih', 'parameterterpilih'));
     }
 
     public function paginationParameterPemeriksaanKimia(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameterterpilih = [];
+
+        foreach ($parameter as $val) {
+            array_push($parameterterpilih, $val->parameter_id);
+        }
 
         $kimia = DB::table('parameter_pemeriksaan_kimia')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
 
         return view('registrasi.kimia.parameterpemeriksaan', compact('kimia', 'parameterterpilih'))->render();
     }
@@ -709,20 +830,28 @@ class Registrasi extends Controller
 
     public function paginationPaketPemeriksaanKimia(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $paketterpilih = [];
+
+        foreach ($paket as $val) {
+            array_push($paketterpilih, $val->paket_pemeriksaan_id);
+        }
 
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(2);
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
 
         return view('registrasi.kimia.paketpemeriksaan', compact('pemeriksaan', 'paketterpilih'))->render();
     }
 
     public function paginationParameterPemeriksaanMikrobiologi(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameterterpilih = [];
+
+        foreach ($parameter as $val) {
+            array_push($parameterterpilih, $val->parameter_id);
+        }
 
         $mikrobiologi = DB::table('parameter_pemeriksaan_mikrobiologi')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
 
         return view('registrasi.mikrobiologi.parameterpemeriksaan', compact('mikrobiologi', 'parameterterpilih'))->render();
     }
@@ -730,10 +859,14 @@ class Registrasi extends Controller
 
     public function paginationPaketPemeriksaanMikrobiologi(Request $request) {
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $paketterpilih = [];
+
+        foreach ($paket as $val) {
+            array_push($paketterpilih, $val->paket_pemeriksaan_id);
+        }
 
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(3);
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
 
         return view('registrasi.mikrobiologi.paketpemeriksaan', compact('pemeriksaan', 'paketterpilih'))->render();
     }
@@ -741,10 +874,9 @@ class Registrasi extends Controller
     public function editKimia($pemeriksaan_id) {
         $jenisPemeriksaan = new JenisPemeriksaan();
         $pemeriksaantbl = new PemeriksaanTbl();
-        $redis = Redis::connection();
 
-        $redis->del("paket_user_".Auth::id());
-        $redis->del("parameter_user_".Auth::id());
+        DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
+        DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
         $pemeriksaan = $pemeriksaantbl->getPaketPemeriksaan(2);
         $jenis = $jenisPemeriksaan->getComboJenisLabPemeriksaan(2);
@@ -755,21 +887,42 @@ class Registrasi extends Controller
             ->leftJoin('detail_pemeriksaan_kimia', 'view_pemeriksaan.id', 'detail_pemeriksaan_kimia.pemeriksaan_id')
             ->leftJoin('kemasan_sampel', 'detail_pemeriksaan_kimia.kemasan_sampel_id', 'kemasan_sampel.id')
             ->leftJoin('jenis_sampel', 'detail_pemeriksaan_kimia.jenis_sampel_id', 'jenis_sampel.id')
-            ->where('user_id', Auth::user()->id)->where([['jenis_lab_id', 2], ['view_pemeriksaan.id', $pemeriksaan_id]])->first();
+            ->where('user_id', Auth::id())->where([['jenis_lab_id', 2], ['view_pemeriksaan.id', $pemeriksaan_id]])->first();
 
         $detailPemeriksaan = DB::table('detail_pemeriksaan')->where('pemeriksaan_id', $pemeriksaan_id)->get();
 
         foreach ($detailPemeriksaan as $val) {
             if ($val->jenis_pemeriksaan == 1) {
-                $redis->hSet("paket_user_".Auth::id(), $val->paket_parameter_id, $val->harga);
+                TempPaketPemeriksaanTbl::create([
+                    "user_id" => Auth::id(),
+                    "paket_pemeriksaan_id" => $val->paket_parameter_id,
+                    "biaya" => $val->harga
+                ]);
             } else {
-                $redis->hSet("parameter_user_".Auth::id(), $val->paket_parameter_id, $val->harga);
+                TempParameterPemeriksaanTbl::create([
+                    "user_id" => Auth::id(),
+                    "parameter_id" => $val->paket_parameter_id,
+                    "biaya" => $val->harga
+                ]);
             }
         }
 
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
         $kimia = DB::table('parameter_pemeriksaan_kimia')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
+        $paketterpilih = $arrpaket;
+        $parameterterpilih = $arrparameter;
 
         return view('registrasi.kimia.edit', compact('jenis', 'jenisSampel', 'kemasan', 'pemeriksaan', 'kimia', 'paketterpilih', 'parameterterpilih', 'data'));
     }
@@ -914,18 +1067,17 @@ class Registrasi extends Controller
     public function createMikrobiologi() {
         $jenisPemeriksaans = new JenisPemeriksaan();
         $pemeriksaan = new PemeriksaanTbl();
-        $redis = Redis::connection();
 
-        $redis->del("paket_user_".Auth::id());
-        $redis->del("parameter_user_".Auth::id());
+        DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
+        DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
         $jenis = $jenisPemeriksaans->getComboJenisLabPemeriksaan(3);
         $jenisSampel = $jenisPemeriksaans->getComboJenisSample(3);
         $kemasan = $jenisPemeriksaans->getComboKemasan(3);
         $pemeriksaan = $pemeriksaan->getPaketPemeriksaan(3);
         $mikrobiologi = DB::table('parameter_pemeriksaan_mikrobiologi')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
+        $paketterpilih = [];
+        $parameterterpilih = [];
 
         return view('registrasi.mikrobiologi.create', compact('jenis', 'jenisSampel', 'kemasan', 'pemeriksaan', 'mikrobiologi', 'paketterpilih', 'parameterterpilih'));
 
@@ -934,10 +1086,9 @@ class Registrasi extends Controller
     public function editMikrobiologi($pemeriksaan_id) {
         $jenisPemeriksaan = new JenisPemeriksaan();
         $pemeriksaantbl = new PemeriksaanTbl();
-        $redis = Redis::connection();
 
-        $redis->del("paket_user_".Auth::id());
-        $redis->del("parameter_user_".Auth::id());
+        DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
+        DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
         $pemeriksaan = $pemeriksaantbl->getPaketPemeriksaan(3);
         $jenis = $jenisPemeriksaan->getComboJenisLabPemeriksaan(3);
@@ -954,15 +1105,36 @@ class Registrasi extends Controller
 
         foreach ($detailPemeriksaan as $val) {
             if ($val->jenis_pemeriksaan == 1) {
-                $redis->hSet("paket_user_".Auth::id(), $val->paket_parameter_id, $val->harga);
+                TempPaketPemeriksaanTbl::create([
+                    "user_id" => Auth::id(),
+                    "paket_pemeriksaan_id" => $val->paket_parameter_id,
+                    "biaya" => $val->harga
+                ]);
             } else {
-                $redis->hSet("parameter_user_".Auth::id(), $val->paket_parameter_id, $val->harga);
+                TempParameterPemeriksaanTbl::create([
+                    "user_id" => Auth::id(),
+                    "parameter_id" => $val->paket_parameter_id,
+                    "biaya" => $val->harga
+                ]);
             }
         }
 
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
         $mikrobiologi = DB::table('parameter_pemeriksaan_mikrobiologi')->where('status', 1)->paginate(16, ['*'], 'pageparameterpemeriksaan');
-        $paketterpilih = $redis->hKeys("paket_user_".Auth::id());
-        $parameterterpilih = $redis->hKeys("parameter_user_".Auth::id());
+        $paketterpilih = $arrpaket;
+        $parameterterpilih = $arrparameter;
 
         return view('registrasi.mikrobiologi.edit', compact('jenis', 'jenisSampel', 'kemasan', 'pemeriksaan', 'mikrobiologi', 'paketterpilih', 'parameterterpilih', 'data'));
     }
@@ -973,15 +1145,14 @@ class Registrasi extends Controller
 
     public function storeKimia(Request $request) {
         $user = Auth::user();
-        $redis = Redis::connection();
 
         DB::beginTransaction();
 
         $jenis_lab_id = $request->jenis_lab_id;
         $tgl_waktu_kunjungan = $request->tglwaktukunjungan;
         $total_biaya = str_ireplace(".", "", $request->total_biaya);
-        $paket_pemeriksaan = $redis->hGetAll("paket_user_".Auth::id());
-        $parameter_pemeriksaan = $redis->hGetAll("parameter_user_".Auth::id());
+        $paket_pemeriksaan = DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->get();
+        $parameter_pemeriksaan = DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->get();
         $kemasan_sampel_id = $request->kemasan_sampel_id;
         $volume = $request->volume;
         $jmlh_sampel = $request->jmlh_sampel;
@@ -1011,27 +1182,27 @@ class Registrasi extends Controller
             ]);
 
             if ($paket_pemeriksaan) {
-                foreach ($paket_pemeriksaan as $key => $val) {
-                    $paket = DB::table('paket_pemeriksaan')->where('id', $key)->select('nama_pemeriksaan')->first();
+                foreach ($paket_pemeriksaan as $val) {
+                    $paket = DB::table('paket_pemeriksaan')->where('id', $val->paket_pemeriksaan_id)->select('nama_pemeriksaan')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan->id,
                         "jenis_pemeriksaan" => 1,
                         "nama_pemeriksaan" => $paket->nama_pemeriksaan,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->paket_pemeriksaan_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
 
             if ($parameter_pemeriksaan) {
-                foreach ($parameter_pemeriksaan as $key => $val) {
-                    $paket = DB::table('parameter_pemeriksaan_kimia')->where('id', $key)->select('nama_parameter')->first();
+                foreach ($parameter_pemeriksaan as $val) {
+                    $paket = DB::table('parameter_pemeriksaan_kimia')->where('id', $val->parameter_id)->select('nama_parameter')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan->id,
                         "jenis_pemeriksaan" => 2,
                         "nama_pemeriksaan" => $paket->nama_parameter,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->parameter_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
@@ -1053,7 +1224,6 @@ class Registrasi extends Controller
 
     public function updateKimia(Request $request) {
         $user = Auth::user();
-        $redis = Redis::connection();
 
         DB::beginTransaction();
 
@@ -1061,8 +1231,8 @@ class Registrasi extends Controller
         $jenis_lab_id = $request->jenis_lab_id;
         $tgl_waktu_kunjungan = $request->tglwaktukunjungan;
         $total_biaya = str_ireplace(".", "", $request->total_biaya);
-        $paket_pemeriksaan = $redis->hGetAll("paket_user_".Auth::id());
-        $parameter_pemeriksaan = $redis->hGetAll("parameter_user_".Auth::id());
+        $paket_pemeriksaan = DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->get();
+        $parameter_pemeriksaan = DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->get();
         $kemasan_sampel_id = $request->kemasan_sampel_id;
         $volume = $request->volume;
         $jmlh_sampel = $request->jmlh_sampel;
@@ -1098,27 +1268,27 @@ class Registrasi extends Controller
             }
 
             if ($paket_pemeriksaan) {
-                foreach ($paket_pemeriksaan as $key => $val) {
-                    $paket = DB::table('paket_pemeriksaan')->where('id', $key)->select('nama_pemeriksaan')->first();
+                foreach ($paket_pemeriksaan as $val) {
+                    $paket = DB::table('paket_pemeriksaan')->where('id', $val->paket_pemeriksaan_id)->select('nama_pemeriksaan')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan_id,
                         "jenis_pemeriksaan" => 1,
                         "nama_pemeriksaan" => $paket->nama_pemeriksaan,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->paket_pemeriksaan_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
 
             if ($parameter_pemeriksaan) {
-                foreach ($parameter_pemeriksaan as $key => $val) {
-                    $paket = DB::table('parameter_pemeriksaan_kimia')->where('id', $key)->select('nama_parameter')->first();
+                foreach ($parameter_pemeriksaan as $val) {
+                    $paket = DB::table('parameter_pemeriksaan_kimia')->where('id', $val->parameter_id)->select('nama_parameter')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan_id,
                         "jenis_pemeriksaan" => 2,
                         "nama_pemeriksaan" => $paket->nama_parameter,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->parameter_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
@@ -1140,15 +1310,14 @@ class Registrasi extends Controller
 
     public function storeMikrobiologi(Request $request) {
         $user = Auth::user();
-        $redis = Redis::connection();
 
         DB::beginTransaction();
 
         $jenis_lab_id = $request->jenis_lab_id;
         $tgl_waktu_kunjungan = $request->tglwaktukunjungan;
         $total_biaya = str_ireplace(".", "", $request->total_biaya);
-        $paket_pemeriksaan = $redis->hGetAll("paket_user_".Auth::id());
-        $parameter_pemeriksaan = $redis->hGetAll("parameter_user_".Auth::id());
+        $paket_pemeriksaan = DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->get();
+        $parameter_pemeriksaan = DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->get();
         $kemasan_sampel_id = $request->kemasan_sampel_id;
         $volume = $request->volume;
         $jmlh_sampel = $request->jmlh_sampel;
@@ -1178,27 +1347,27 @@ class Registrasi extends Controller
             ]);
 
             if ($paket_pemeriksaan) {
-                foreach ($paket_pemeriksaan as $key => $val) {
-                    $paket = DB::table('paket_pemeriksaan')->where('id', $key)->select('nama_pemeriksaan')->first();
+                foreach ($paket_pemeriksaan as $val) {
+                    $paket = DB::table('paket_pemeriksaan')->where('id', $val->paket_pemeriksaan_id)->select('nama_pemeriksaan')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan->id,
                         "jenis_pemeriksaan" => 1,
                         "nama_pemeriksaan" => $paket->nama_pemeriksaan,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->paket_pemeriksaan_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
 
             if ($parameter_pemeriksaan) {
-                foreach ($parameter_pemeriksaan as $key => $val) {
-                    $paket = DB::table('parameter_pemeriksaan_mikrobiologi')->where('id', $key)->select('nama_parameter')->first();
+                foreach ($parameter_pemeriksaan as $val) {
+                    $paket = DB::table('parameter_pemeriksaan_mikrobiologi')->where('id', $val->parameter_id)->select('nama_parameter')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan->id,
                         "jenis_pemeriksaan" => 2,
                         "nama_pemeriksaan" => $paket->nama_parameter,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->parameter_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
@@ -1220,7 +1389,6 @@ class Registrasi extends Controller
 
     public function updateMikrobiologi(Request $request) {
         $user = Auth::user();
-        $redis = Redis::connection();
 
         DB::beginTransaction();
 
@@ -1228,8 +1396,8 @@ class Registrasi extends Controller
         $jenis_lab_id = $request->jenis_lab_id;
         $tgl_waktu_kunjungan = $request->tglwaktukunjungan;
         $total_biaya = str_ireplace(".", "", $request->total_biaya);
-        $paket_pemeriksaan = $redis->hGetAll("paket_user_".Auth::id());
-        $parameter_pemeriksaan = $redis->hGetAll("parameter_user_".Auth::id());
+        $paket_pemeriksaan = DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->get();
+        $parameter_pemeriksaan = DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->get();
         $kemasan_sampel_id = $request->kemasan_sampel_id;
         $volume = $request->volume;
         $jmlh_sampel = $request->jmlh_sampel;
@@ -1265,27 +1433,27 @@ class Registrasi extends Controller
             }
 
             if ($paket_pemeriksaan) {
-                foreach ($paket_pemeriksaan as $key => $val) {
-                    $paket = DB::table('paket_pemeriksaan')->where('id', $key)->select('nama_pemeriksaan')->first();
+                foreach ($paket_pemeriksaan as $val) {
+                    $paket = DB::table('paket_pemeriksaan')->where('id', $val->paket_pemeriksaan_id)->select('nama_pemeriksaan')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan_id,
                         "jenis_pemeriksaan" => 1,
                         "nama_pemeriksaan" => $paket->nama_pemeriksaan,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->paket_pemeriksaan_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
 
             if ($parameter_pemeriksaan) {
-                foreach ($parameter_pemeriksaan as $key => $val) {
-                    $paket = DB::table('parameter_pemeriksaan_mikrobiologi')->where('id', $key)->select('nama_parameter')->first();
+                foreach ($parameter_pemeriksaan as $val) {
+                    $paket = DB::table('parameter_pemeriksaan_mikrobiologi')->where('id', $val->parameter_id)->select('nama_parameter')->first();
                     $detailPemeriksaan = DetailPemeriksaanMdl::create([
                         "pemeriksaan_id" => $pemeriksaan_id,
                         "jenis_pemeriksaan" => 2,
                         "nama_pemeriksaan" => $paket->nama_parameter,
-                        "paket_parameter_id" => $key,
-                        "harga" => $val
+                        "paket_parameter_id" => $val->parameter_id,
+                        "harga" => $val->biaya
                     ]);
                 }
             }
@@ -1353,7 +1521,6 @@ class Registrasi extends Controller
             ->first();
 
         $kuota = 3;
-
 
         $html = '';
         $count = 1;
@@ -1793,12 +1960,22 @@ class Registrasi extends Controller
         $total_biaya = str_ireplace('.', '', $request->total_biaya);
         $jmlh_sampel = $request->jmlh_sampel;
         $jenis_lab_id = $request->jenis_lab_id;
-        $redis = Redis::connection();
 
-        $paket = $redis->hKeys("paket_user_".Auth::id());
-        $parameter = $redis->hKeys("parameter_user_".Auth::id());
-        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $paket);
-        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $parameter);
+        $paket = DB::table('temp_paket_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $parameter = DB::table('temp_parameter_pemeriksaan')->where('user_id', '=', Auth::id())->get();
+        $arrpaket = [];
+        $arrparameter = [];
+
+        foreach ($paket as $val) {
+            array_push($arrpaket, $val->paket_pemeriksaan_id);
+        }
+
+        foreach ($parameter as $val) {
+            array_push($arrparameter, $val->parameter_id);
+        }
+
+        $total_paket = $pemeriksaan->getHargaPaketPemeriksaan($jenis_lab_id, $arrpaket);
+        $total_parameter = $pemeriksaan->getHargaParameterPemeriksaan($jenis_lab_id, $arrparameter);
         $total_biaya = $total_paket + $total_parameter;
 
         if ($jmlh_sampel > 0) {

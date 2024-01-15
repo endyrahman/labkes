@@ -61,7 +61,7 @@
                 {{ csrf_field() }}
                 <div class="modal-body">
                     <input type="hidden" name="pemeriksaan_id" id="pemeriksaan_id" class="form-control"></input>
-                    <input type="hidden" name="lab_id" id="lab_id" value="2" class="form-control"></input>
+                    <input type="hidden" name="lab_id" id="lab_id" value="3" class="form-control"></input>
                     <h5>Apakah anda yakin untuk hapus registrasi ini?</h5>
                 </div>
                 <div class="modal-footer">

@@ -4,6 +4,7 @@ namespace App\Models\PasienTbl;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Auth;
 use DB;
 
 class PasienTbl extends Model
@@ -27,7 +28,7 @@ class PasienTbl extends Model
     ];
 
     public static function getDataPasien() {
-        $pasien = DB::table('pasien')->get();
+        $pasien = DB::table('pasien')->where('user_id', Auth::id())->get();
 
         return $pasien;
     }

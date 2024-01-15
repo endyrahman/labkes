@@ -8,13 +8,13 @@
         <meta name="description" content="Pemeriksaan kesehatan laboratorium klinik, laboratorium kimia, laboratorium mikrobiologi">
         <meta name="keywords" content="Laboratorium Kesehatan Kota Semarang">
 
-        <link rel="shortcut icon" href="landingpage/assets/images/favicon.ico">
-        <link href="landingpage/assets/libs/tiny-slider/tiny-slider.css" rel="stylesheet">
-        <link href="landingpage/assets/libs/tobii/css/tobii.min.css" rel="stylesheet">
-        <link href="landingpage/assets/css/bootstrap.css" id="bootstrap-style" class="theme-opt" rel="stylesheet" type="text/css">
-        <link href="landingpage/assets/libs/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet" type="text/css">
-        <link href="landingpage/assets/libs/@iconscout/unicons/css/line.css" type="text/css" rel="stylesheet">
-        <link href="landingpage/assets/css/style.css" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="{{ asset('landingpage/assets/images/favicon.ico') }}">
+        <link href="{{ asset('landingpage/assets/libs/tiny-slider/tiny-slider.css') }}" rel="stylesheet">
+        <link href="{{ asset('landingpage/assets/libs/tobii/css/tobii.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('landingpage/assets/css/bootstrap.css') }}" id="bootstrap-style" class="theme-opt" rel="stylesheet" type="text/css">
+        <link href="{{ asset('landingpage/assets/libs/@mdi/font/css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('landingpage/assets/libs/@iconscout/unicons/css/line.css') }}" type="text/css" rel="stylesheet">
+        <link href="{{ asset('landingpage/assets/css/style.css') }}" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css">
         <meta name="csrf-token" content="{{ csrf_token() }}" />
         <style type="text/css">
             .bg-half-50 {
@@ -159,7 +159,7 @@
                                                     <label class="form-label">Password <span class="text-danger">*</span></label>
                                                     <div class="form-icon position-relative">
                                                         <i data-feather="key" class="fea icon-sm icons"></i>
-                                                        <input type="password" name="password" class="form-control ps-5" placeholder="Password" required="">
+                                                        <input type="password" name="password" class="form-control ps-5" placeholder="Password" required="" autocomplete="off">
                                                     </div>
                                                 </div>
                                             </div><!--end col-->
@@ -250,7 +250,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Password <span class="text-danger">*</span></label>
                                                     <div class="form-icon position-relative">
-                                                        <input type="password" name="password" class="form-control ps-3" placeholder="Password" required="">
+                                                        <input type="password" name="password" class="form-control ps-3" placeholder="Password" required="" autocomplete="off">
                                                     </div>
                                                 </div>
                                             </div>

@@ -221,7 +221,7 @@
                 </div>
                 <div class="form-row mb-4">
                     <div class="form-group col-md-6">
-                        <label for="no_registrasi">No. Registrasi</label>
+                        <label for="no_registrasi">Nama P</label>
                         <input type="text" class="form-control" id="detail_no_registrasi" name="detail_no_registrasi" readonly>
                     </div>
                 </div>
