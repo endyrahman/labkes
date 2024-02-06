@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Landingpage\SlideMdl;
+use Illuminate\Support\Facades\Storage;
 use Auth;
 use DB;
 
@@ -67,10 +68,9 @@ class LandingpageSlide extends Controller
         $nama = $request->nama;
         $status = $request->status;
         $foto_slide = $request->file('foto_slide');
-
-        $pathfoto_slide = $foto_slide->store('public/foto_slide');
+        $pathfoto_slide = Storage::disk('public_uploads')->put('slide', $foto_slide);
         $flfoto_slide = explode('/', $pathfoto_slide);
-        $filefoto_slide = $flfoto_slide[2];
+        $filefoto_slide = $flfoto_slide[1];
 
         DB::beginTransaction();
 

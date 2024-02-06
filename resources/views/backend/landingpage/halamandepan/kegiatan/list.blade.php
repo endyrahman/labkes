@@ -11,7 +11,7 @@
     <td>
         <div class="d-flex">
             <div class="usr-img-frame mr-2 rounded-circle">
-                <img alt="avatar" class="img-fluid rounded-circle" src="/labkes/storage/foto_kegiatan/{{ $val->foto_kegiatan }}">
+                <img alt="avatar" class="img-fluid rounded-circle" src="{{ url('/uploads/kegiatan/'.$val->foto_kegiatan) }}">
             </div>
         </div>
     </td>

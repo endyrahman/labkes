@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Pamflet\PamfletTbl;
+use Illuminate\Support\Facades\Storage;
 
 use DB;
 use Auth;
@@ -53,9 +54,9 @@ class LandingpagePromosi extends Controller
         $status = $request->status;
 
         $foto_promosi = $request->file('foto_promosi');
-        $pathfoto_promosi = $foto_promosi->store('public/foto_promosi');
+        $pathfoto_promosi = Storage::disk('public_uploads')->put('promosi', $foto_promosi);
         $flfoto_promosi = explode('/', $pathfoto_promosi);
-        $filefoto_promosi = $flfoto_promosi[2];
+        $filefoto_promosi = $flfoto_promosi[1];
 
         DB::beginTransaction();
 

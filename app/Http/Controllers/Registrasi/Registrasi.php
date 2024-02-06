@@ -8,6 +8,7 @@ use App\Models\JenisPemeriksaan\JenisPemeriksaan;
 use RealRashid\SweetAlert\Facades\Alert;
 use Auth;
 use DB;
+use App\Models\StatusWa\StatusWa;
 use App\Models\PemeriksaanTbl\PemeriksaanTbl;
 use App\Models\DetailPemeriksaan\DetailPemeriksaanMdl;
 use App\Models\DetailKimia\DetailKimiaMdl;
@@ -29,8 +30,22 @@ class Registrasi extends Controller
     }
 
     public function gridRegistrasiVerifikasi() {
-        $data = DB::table('view_pemeriksaan')->orderBy('created_at', 'desc')
+        $data = DB::table('view_pemeriksaan')
+            ->select('view_pemeriksaan.*', 'users.no_hp')
+            ->leftJoin('users', 'view_pemeriksaan.user_id', 'users.id')
+            ->orderBy('view_pemeriksaan.created_at', 'desc')
             ->paginate(15, ['*'], 'pagegridverifikasipemeriksaan');
+
+        foreach ($data as $key => $val) {
+            $whatsapp = DB::table('status_wa')->where('pemeriksaan_id', $val->id)->first();
+            if ($whatsapp) {
+                $countWa = DB::table('status_wa')->where('pemeriksaan_id', $val->id)->count();
+
+                $data[$key]->countwa = $countWa;
+            } else {
+                $data[$key]->countwa = "-";
+            }
+        }
 
         return view('registrasi.verifikasi.index', compact('data'));
     }
@@ -2006,6 +2021,173 @@ class Registrasi extends Controller
         return response()->download($file, $filename);
     }
 
+    public function dataKirimWhatsapp(Request $request) {
+        $pemeriksaan_id = $request->pemeriksaan_id;
+        $whatsapp = DB::table('status_wa')->where('pemeriksaan_id', $pemeriksaan_id)->get();
+        $html = "";
+        $html .= "<div class='table-responsive'><table class='table table-bordered mb-4'>";
+        $html .= "<tr>";
+        $html .= "<th class='text-center'>No</th>";
+        $html .= "<th class='text-center'>No. Whatsapp</th>";
+        $html .= "<th class='text-center'>Tgl. Kirim</th>";
+        $html .= "<th class='text-center'>Status</th>";
+        $html .= "<th class='text-center'>Cek</th>";
+        $html .= "</tr>";
+
+        $no = 1;
+        foreach($whatsapp as $val) {
+            $html .= "<tr>";
+            $html .= "<td class='text-center'>".$no++."</td>";
+            $html .= "<td class='text-center'>".$val->no_hp."</td>";
+            $html .= "<td class='text-center'>".date('d-m-Y H:i:s', strtotime($val->created_at))."</td>";
+                $html .= "<td class='text-center'>".$val->status."</td>";
+            $html .= "<td class='text-center'><a href='javascript:void(0)' onclick='checkWa(".$val->id.")' class='btn btn-sm btn-info'> <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-info'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='16' x2='12' y2='12'></line><line x1='12' y1='8' x2='12.01' y2='8'></line></svg></a></td>";
+            $html .= "</tr>";
+        }
+
+        $html .= "</div></table>";
+
+        $result['table'] = $html;
+
+        return response()->json($result);
+
+    }
+
+    public function kirimWhatsapp(Request $request) {
+        $pemeriksaan_id = $request->pemeriksaan_id;
+        $data = DB::table('view_pemeriksaan')->where('view_pemeriksaan.id', $pemeriksaan_id)
+            ->select('view_pemeriksaan.*', 'users.no_hp')
+            ->leftJoin('users', 'view_pemeriksaan.user_id', 'users.id')
+            ->first();
+
+        $phone = $data->no_hp;
+        $count = strlen((string) $phone);
+
+        if (substr($phone, 0, 2) != 62) {
+            $phone = substr($phone,1, (int) $count);
+            $phone = '62'.$phone;
+        }
+
+        $curl = curl_init();
+        $message = urlencode("Kepada Yth,\nBapak/Ibu Pelanggan Laboratorium Kesehatan Semarang\n\nTerima kasih telah berkenan menunggu.\nBerikut ini kami informasikan status pemeriksaan Bapak/Ibu,\n\nNama Pasien:".$data->nama_pasien."\nNo Registrasi:".$data->no_registrasi."\nStatus pemeriksaan: Sudah selesai\n\nUntuk hasil pemeriksaan dapat mengunjungi website Laboratorium Kesehatan Kota Semarang.\nhttp://103.101.52.65/labkes");
+        $token = "lh1yD6Bbzf5SeJGUf0qHuXtciUuTfez0LTafkEzxnhP4J2Ez9uhYQHmLMuUWWym5";
+        curl_setopt($curl, CURLOPT_HTTPHEADER,
+            array(
+                "Authorization: $token",
+                "Content-Type: application/json"
+            )
+        );
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_URL,  "https://jogja.wablas.com/api/send-message?phone=$phone&message=$message&token=$token");
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $result = json_decode($response);
+
+        DB::beginTransaction();
+
+        try {
+            $statuswa = StatusWa::create([
+                "pemeriksaan_id" => $pemeriksaan_id,
+                "no_hp" => $data->no_hp,
+                "messages_id" => $result->data->messages[0]->id
+            ]);
+
+            DB::commit();
+
+            $countWa = DB::table('status_wa')->where('pemeriksaan_id', $pemeriksaan_id)->count();
+
+            $res['status'] = 'success';
+            $res['message'] = 'Proses pengiriman notifikasi Whatsapp berhasil';
+            $res['countWa'] = $countWa;
+
+            return response()->json($res);
+        } catch (\Throwable $t) {
+            $countWa = DB::table('status_wa')->where('pemeriksaan_id', $pemeriksaan_id)->count();
+
+            $res['status'] = 'failed';
+            $res['message'] = 'Proses pengiriman notifikasi Whatsapp gagal';
+            $res['countWa'] = $countWa;
+
+            return response()->json($res);
+        }
+    }
+
+    public function checkWhatsapp(Request $request) {
+        $statuswa_id = $request->statuswa_id;
+        $whatsapp = DB::table('status_wa')->where('id', $statuswa_id)->first();
+
+        $curl = curl_init();
+        $message_id = $whatsapp->messages_id;
+
+        $token = "lh1yD6Bbzf5SeJGUf0qHuXtciUuTfez0LTafkEzxnhP4J2Ez9uhYQHmLMuUWWym5";
+
+        curl_setopt($curl, CURLOPT_HTTPHEADER,
+            array(
+                "Authorization: $token",
+                "Content-Type: application/json"
+            )
+        );
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_URL,  "https://jogja.wablas.com/api/report-realtime?message_id=$message_id");
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $result = json_decode($response);
+
+        DB::beginTransaction();
+
+        try {
+            $statuswa = StatusWa::where('id', $statuswa_id)
+                ->update([
+                    "status" => $result->data[0]->status
+                ]);
+
+            DB::commit();
+
+            $pemeriksaan_id = $whatsapp->pemeriksaan_id;
+            $whatsapp = DB::table('status_wa')->where('pemeriksaan_id', $pemeriksaan_id)->get();
+            $html = "";
+            $html .= "<div class='table-responsive'><table class='table table-bordered mb-4'>";
+            $html .= "<tr>";
+            $html .= "<th class='text-center'>No</th>";
+            $html .= "<th class='text-center'>No. Whatsapp</th>";
+            $html .= "<th class='text-center'>Tgl. Kirim</th>";
+            $html .= "<th class='text-center'>Status</th>";
+            $html .= "<th class='text-center'>Cek</th>";
+            $html .= "</tr>";
+
+            $no = 1;
+            foreach($whatsapp as $val) {
+                $html .= "<tr>";
+                $html .= "<td class='text-center'>".$no++."</td>";
+                $html .= "<td class='text-center'>".$val->no_hp."</td>";
+                $html .= "<td class='text-center'>".date('d-m-Y H:i:s', strtotime($val->created_at))."</td>";
+                $html .= "<td class='text-center'>".$val->status."</td>";
+                $html .= "<td class='text-center'><a href='javascript:void(0)' onclick='checkWa(".$val->id.")' class='btn btn-sm btn-info'> <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-info'><circle cx='12' cy='12' r='10'></circle><line x1='12' y1='16' x2='12' y2='12'></line><line x1='12' y1='8' x2='12.01' y2='8'></line></svg></a></td>";
+                $html .= "</tr>";
+            }
+
+            $html .= "</div></table>";
+
+            $res['status'] = 'success';
+            $res['table'] = $html;
+
+            return response()->json($res);
+        } catch (\Throwable $t) {
+
+            $res['status'] = 'failed';
+
+            return response()->json($res);
+        }
+
+    }
 
 
 }

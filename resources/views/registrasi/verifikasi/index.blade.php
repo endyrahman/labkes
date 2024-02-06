@@ -282,10 +282,107 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalStatusKirimWa" tabindex="-1" role="dialog" aria-labelledby="modalStatusKirimWaTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Notifikasi Pengiriman Whatsapp</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-sm-12">
+                    <center><h4 id="notifikasiStatusWa"></h4></center>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Tutup</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalKirimWa" tabindex="-1" role="dialog" aria-labelledby="modalKirimWa
+Title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Kirim Notifikasi Whatsapp</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="wa_pemeriksaan_id" id="wa_pemeriksaan_id">
+                <div class="col-sm-12">
+                    <a href="javascript:void(0)" onclick="kirimWa()" class="btn btn-dark mt-2 mb-3"> Kirim Whatsapp</a>
+                </div>
+                <div class="col-sm-12" id="tblCekWa">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Tutup</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script src="{{ asset('backend/assets/js/libs/jquery-3.1.1.min.js') }}"></script>
 <script src="{{ asset('backend/plugins/table/datatable/datatables.js') }}"></script>
 <script src="{{ asset('backend/plugins/file-upload/file-upload-with-preview.min.js') }}"></script>
 <script>
+
+    function dataKirimWa(pemeriksaan_id, no_hp) {
+        var token = $("input[name='_token']").val();
+        $('#modalKirimWa').modal('toggle');
+        $("#wa_pemeriksaan_id").val(pemeriksaan_id);
+
+        $.ajax({
+            type:'POST',
+            url: '{{ url("/registrasi/dataKirimWhatsapp") }}',
+            data: { _token:token, pemeriksaan_id:pemeriksaan_id },
+            success:function(data){
+                $('#tblCekWa').html('');
+                $('#tblCekWa').html(data.table);
+            }
+        });
+    }
+
+    function kirimWa() {
+        var token = $("input[name='_token']").val();
+        var pemeriksaan_id = $("#wa_pemeriksaan_id").val();
+        $('#modalKirimWa').modal('hide');
+        
+        $.ajax({
+            type:'POST',
+            url: '{{ url("/registrasi/kirimwhatsapp/") }}',
+            data: { _token:token, pemeriksaan_id:pemeriksaan_id },
+            success:function(data){
+                $('#countWa-'+pemeriksaan_id).text('');
+                $('#countWa-'+pemeriksaan_id).text(data.countWa);
+                $('#modalStatusKirimWa').modal('toggle');
+                $('#notifikasiStatusWa').text('');
+                $('#notifikasiStatusWa').text(data.message);
+            }
+        });
+    }
+
+    function checkWa(statuswa_id) {
+        var token = $("input[name='_token']").val();
+        
+        $.ajax({
+            type:'POST',
+            url: '{{ url("/registrasi/checkWhatsapp/") }}',
+            data: { _token:token, statuswa_id:statuswa_id },
+            success:function(data){
+                $('#tblCekWa').html('');
+                $('#tblCekWa').html(data.table);
+            }
+        });
+    }
 
     function mdlDetailPemeriksaan(id, no_registrasi, jenis_lab_id, user_id) {
         var token = $("input[name='_token']").val();
@@ -332,7 +429,6 @@
 
     var upformLab = new FileUploadWithPreview('formLab');
     var upformHasilLab = new FileUploadWithPreview('formHasilLab');
-
 
     $(document).on('click', '.pagination a', function(event){
         var urlnow = $(this).attr('href').split('/');

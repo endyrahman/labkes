@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Kegiatan\KegiatanTbl;
+use Illuminate\Support\Facades\Storage;
 use DB;
 use Auth;
 
@@ -52,10 +53,9 @@ class LandingpageKegiatan extends Controller
         $keterangan = $request->keterangan;
         $tgl_kegiatan = $request->tgl_kegiatan;
         $foto_kegiatan = $request->file('foto_kegiatan');
-
-        $pathfoto_kegiatan = $foto_kegiatan->store('public/foto_kegiatan');
+        $pathfoto_kegiatan = Storage::disk('public_uploads')->put('kegiatan', $foto_kegiatan);
         $flfoto_kegiatan = explode('/', $pathfoto_kegiatan);
-        $filefoto_kegiatan = $flfoto_kegiatan[2];
+        $filefoto_kegiatan = $flfoto_kegiatan[1];
 
 
         DB::beginTransaction();

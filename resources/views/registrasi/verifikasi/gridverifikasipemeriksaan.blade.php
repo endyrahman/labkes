@@ -31,6 +31,9 @@
 
         @if ($val->status == 2)
             <span class="badge outline-badge-primary shadow-none">Hasil Terupload</span>
+            <a href="javascript:void(0)" onclick="dataKirimWa({{$val->id}},{{$val->no_hp}})" class="btn btn-sm btn-outline-success mt-1 mb-1 ml-1">
+                Whatsapp <span class="badge badge-dark" id="countWa-{{$val->id}}">{{ $val->countwa }}</span>
+            </a>
         @endif
     </td>
     <td class="text-center">{{ date('d-m-Y', strtotime($val->created_at)) }} <br/> {{ date('H:i:s', strtotime($val->created_at)) }}</td>

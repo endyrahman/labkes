@@ -26,7 +26,7 @@ class Landingpage extends Controller
         $layanankami = DB::table('lp_layanan_kami')->get();
 
         foreach ($slide as $val) {
-            array_push($arrslide, "storage/foto_slide/".$val->file);
+            array_push($arrslide, "uploads/slide/".$val->file);
         }
 
         return view('layouts.applanding', compact('menu', 'promosi', 'kegiatan', 'arrslide', 'layanankami'));

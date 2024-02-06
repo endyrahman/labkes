@@ -10,7 +10,7 @@
     <td class="text-center">
         <div class="d-flex">
             <div class="usr-img-frame mr-2">
-                <img class="img-fluid" src="{{ url('/storage/foto_promosi/'.$val->nama_file) }}">
+                <img class="img-fluid" src="{{ url('/uploads/promosi/'.$val->nama_file) }}">
             </div>
         </div>
     </td>

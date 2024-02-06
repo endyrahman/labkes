@@ -329,7 +329,7 @@
                                 <ul class="collapse list-unstyled sub-submenu" id="pages-halaman-depan" data-parent="#menu-landing-page">
                                     @foreach (App\Models\Landingpage\MenuMdl::getMenuHalamanDepan() as $val)
                                     <li>
-                                        <a href="{{ url('$val->url') }}"> {{ $val->nama }} </a>
+                                        <a href="{{ url($val->url) }}"> {{ $val->nama }} </a>
                                     </li>
                                     @endforeach
                                 </ul>

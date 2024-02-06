@@ -2,7 +2,7 @@
 <div class="col-lg-4 col-md-6 mt-4 pt-2">
     <div class="card blog blog-primary rounded border-0 shadow">
         <div class="position-relative">
-            <img src="{{ url('/storage/foto_kegiatan/'.$val->foto_kegiatan) }}" class="card-img-top img-fluid mx-auto rounded-top" alt="...">
+            <img src="{{ url('/uploads/kegiatan/'.$val->foto_kegiatan) }}" class="card-img-top img-fluid mx-auto rounded-top" alt="...">
             <div class="overlay rounded-top"></div>
         </div>
         <div class="card-body content">

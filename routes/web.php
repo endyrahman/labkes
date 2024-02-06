@@ -159,6 +159,10 @@ Route::post('/homecare/verifikasi/updateStatusLab', [HomeCare::class, 'updateSta
 Route::post('/homecare/verifikasi/updateStatusSelesaiLab', [HomeCare::class, 'updateStatusSelesaiLab']);
 Route::post('/homecare/verifikasi/batal', [HomeCare::class, 'updateStatusBatalHomecare']);
 
+Route::post('/registrasi/kirimwhatsapp', [Registrasi::class, 'kirimWhatsapp']);
+Route::post('/registrasi/dataKirimWhatsapp', [Registrasi::class, 'dataKirimWhatsapp']);
+Route::post('/registrasi/checkWhatsapp', [Registrasi::class, 'checkWhatsapp']);
+
 
 Route::post('master/jenispemeriksaan/getDataParameterPemeriksaan', [MstJenisPemeriksaan::class, 'getDataParameterPemeriksaan']);
 Route::post('master/jenispemeriksaan/hapusDataParameterPemeriksaan', [MstJenisPemeriksaan::class, 'hapusDataParameterPemeriksaan']);
