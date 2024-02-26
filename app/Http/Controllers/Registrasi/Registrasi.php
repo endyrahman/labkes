@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Redirect;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 
 class Registrasi extends Controller
 {
@@ -180,7 +181,13 @@ class Registrasi extends Controller
         DB::table('temp_paket_pemeriksaan')->where('user_id', Auth::id())->delete();
         DB::table('temp_parameter_pemeriksaan')->where('user_id', Auth::id())->delete();
 
-        $data = DB::table('view_pemeriksaan')->where('id', $pemeriksaan_id)->first();
+        $data = DB::table('view_pemeriksaan')->where([
+            ['id', $pemeriksaan_id],
+            ['user_id', Auth::id()]])->first();
+
+        if (!$data) {
+            return view('404.index');
+        }
 
         $detailPemeriksaan = DB::table('detail_pemeriksaan')->where('pemeriksaan_id', $pemeriksaan_id)->get();
 
@@ -794,6 +801,7 @@ class Registrasi extends Controller
 
         $data['html'] = $html;
         $data['nama_lengkap'] = $pemeriksaan->nama_lengkap;
+        $data['nama_pasien'] = $pemeriksaan->nama_pasien;
 
         return response()->json($data);
     }
@@ -903,6 +911,10 @@ class Registrasi extends Controller
             ->leftJoin('kemasan_sampel', 'detail_pemeriksaan_kimia.kemasan_sampel_id', 'kemasan_sampel.id')
             ->leftJoin('jenis_sampel', 'detail_pemeriksaan_kimia.jenis_sampel_id', 'jenis_sampel.id')
             ->where('user_id', Auth::id())->where([['jenis_lab_id', 2], ['view_pemeriksaan.id', $pemeriksaan_id]])->first();
+
+        if (!$data) {
+            return view('404.index');
+        }
 
         $detailPemeriksaan = DB::table('detail_pemeriksaan')->where('pemeriksaan_id', $pemeriksaan_id)->get();
 
@@ -1115,6 +1127,10 @@ class Registrasi extends Controller
             ->leftJoin('kemasan_sampel', 'detail_pemeriksaan_mikrobiologi.kemasan_sampel_id', 'kemasan_sampel.id')
             ->leftJoin('jenis_sampel', 'detail_pemeriksaan_mikrobiologi.jenis_sampel_id', 'jenis_sampel.id')
             ->where('user_id', Auth::user()->id)->where([['jenis_lab_id', 3], ['view_pemeriksaan.id', $pemeriksaan_id]])->first();
+
+        if (!$data) {
+            return view('404.index');
+        }
 
         $detailPemeriksaan = DB::table('detail_pemeriksaan')->where('pemeriksaan_id', $pemeriksaan_id)->get();
 
@@ -1499,7 +1515,16 @@ class Registrasi extends Controller
     {
         $user = Auth::user();
 
-        $cekpemeriksaan = DB::table('view_pemeriksaan')->where('id', $pemeriksaan_id)->first('jenis_lab_id');
+        $cekpemeriksaan = DB::table('view_pemeriksaan')
+            ->where('id', $pemeriksaan_id);
+        if ($user->role_id != 1) {
+            $cekpemeriksaan->where('user_id', $user->id);
+        } 
+        $cekpemeriksaan = $cekpemeriksaan->first('jenis_lab_id');
+
+        if (!$cekpemeriksaan) {
+            return view('404.index');
+        }
 
         if ($cekpemeriksaan->jenis_lab_id == 1) {
             $data = DB::table('view_pemeriksaan')->where('id', $pemeriksaan_id)->first();
@@ -1618,9 +1643,10 @@ class Registrasi extends Controller
         $no_pelanggan_silkes = $request->no_pelanggan_silkes;
         $no_sampel_silkes = $request->no_sampel_silkes;
         $fileLabHasilPemeriksaan = $request->file('fileLabHasilPemeriksaan');
-        $pathFileLabHasilPemeriksaan = $fileLabHasilPemeriksaan->store('public/hasil_lab');
+
+        $pathFileLabHasilPemeriksaan = Storage::disk('public_uploads')->put('hasil', $fileLabHasilPemeriksaan);
         $flLabHasilPemeriksaan = explode('/', $pathFileLabHasilPemeriksaan);
-        $fileLaboratoriumHasilPemeriksaan = $flLabHasilPemeriksaan[2];
+        $fileLaboratoriumHasilPemeriksaan = $flLabHasilPemeriksaan[1];
 
         DB::beginTransaction();
 
@@ -1667,7 +1693,7 @@ class Registrasi extends Controller
         }
 
         try {
-            DB::table('pemeriksaan')->where('id', $pemeriksaan_id)->delete();
+            DB::table('pemeriksaan')->where([['id', $pemeriksaan_id],['user_id', $user->id]])->delete();
 
             DB::commit();
 
@@ -1883,12 +1909,19 @@ class Registrasi extends Controller
         return response()->json($html);
     }
 
-    public function getDetailPemeriksaanKlinik(Request $request) {
+    public function getDetailPaketPemeriksaan(Request $request) {
         $id = $request->id;
+        $jenis_lab_id = $request->jenis_lab_id;
         $arr_parameter_id = $request->arr_parameter_id;
         $arrParameterId = explode(",", $arr_parameter_id);
 
-        $detailPemeriksaan = DB::table('parameter_pemeriksaan_klinik')->whereIn('id', $arrParameterId)->where('status', 1)->get();
+        if ($jenis_lab_id == 1) {
+            $detailPemeriksaan = DB::table('parameter_pemeriksaan_klinik')->whereIn('id', $arrParameterId)->where('status', 1)->get();
+        } elseif ($jenis_lab_id == 2) {
+            $detailPemeriksaan = DB::table('parameter_pemeriksaan_kimia')->whereIn('id', $arrParameterId)->where('status', 1)->get();
+        } elseif ($jenis_lab_id == 3) {
+            $detailPemeriksaan = DB::table('parameter_pemeriksaan_mikrobiologi')->whereIn('id', $arrParameterId)->where('status', 1)->get();
+        }
 
         $countArr = count($detailPemeriksaan);
 
@@ -2069,7 +2102,7 @@ class Registrasi extends Controller
         }
 
         $curl = curl_init();
-        $message = urlencode("Kepada Yth,\nBapak/Ibu Pelanggan Laboratorium Kesehatan Semarang\n\nTerima kasih telah berkenan menunggu.\nBerikut ini kami informasikan status pemeriksaan Bapak/Ibu,\n\nNama Pasien:".$data->nama_pasien."\nNo Registrasi:".$data->no_registrasi."\nStatus pemeriksaan: Sudah selesai\n\nUntuk hasil pemeriksaan dapat mengunjungi website Laboratorium Kesehatan Kota Semarang.\nhttp://103.101.52.65/labkes");
+        $message = urlencode("Kepada Yth,\nBapak/Ibu Pelanggan UPTD Laboratorium Kesehatan Semarang\n\nTerima kasih atas kepercayaan Bapak/Ibu menjadikan UPTD Laboratorium Kesehatan Kota Semarang sebagai pilihan dalam memberikan pelayanan yang terbaik.\n\nBerikut ini kami informasikan status pemeriksaan Bapak/Ibu,\n\nNama Pasien:".$data->nama_pasien."\nNo Registrasi:".$data->no_registrasi."\nStatus pemeriksaan: Sudah selesai\n\nUntuk hasil pemeriksaan dapat mengunjungi website Laboratorium Kesehatan Kota Semarang.\n\nhttp://103.101.52.65/labkes\n\nUntuk meningkatkan kualitas pelayanan dan memastikan kami terus memberikan pelayanan lebih baik, mohon kesediaan waktu untuk mengisi survey kepuasan pelanggan yang dapat diakses melalui link :\n\nhttp://tinyurl.com/surveykepuasanpelangganlabkes\n\nUPTD Laboratorium Kesehatan, Cepat, Terjangkau, Informatif, Akurat\nSalam Sehat");
         $token = "lh1yD6Bbzf5SeJGUf0qHuXtciUuTfez0LTafkEzxnhP4J2Ez9uhYQHmLMuUWWym5";
         curl_setopt($curl, CURLOPT_HTTPHEADER,
             array(
@@ -2186,8 +2219,12 @@ class Registrasi extends Controller
 
             return response()->json($res);
         }
-
     }
 
+    public function getDataSilkes(Request $request) {
+        $pemeriksaan_id = $request->pemeriksaan_id;
+        $data = DB::table('pemeriksaan')->select('no_pelanggan_silkes', 'no_sampel_silkes')->where('id', $pemeriksaan_id)->first();
 
+        return response()->json($data);
+    }
 }

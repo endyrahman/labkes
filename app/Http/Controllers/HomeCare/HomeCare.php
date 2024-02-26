@@ -193,7 +193,7 @@ class HomeCare extends Controller
             if ($user->role_id == 1) {
                 return redirect::to('/homecare/verifikasi');
             } else {
-                return redirect::to('homecare');
+                return redirect::to('/registrasi/homecare');
             }
         } catch (\Throwable $t) {
             Alert::error('Gagal', 'Data Gagal Dihapus');
@@ -203,7 +203,7 @@ class HomeCare extends Controller
             if ($user->role_id == 1) {
                 return redirect::to('/homecare/verifikasi');
             } else {
-                return redirect::to('homecare');
+                return redirect::to('/registrasi/homecare');
             }
         }
     }

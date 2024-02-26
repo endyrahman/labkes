@@ -156,6 +156,27 @@
     </div>
 </div>
 
+<div class="modal fade" id="mdlDetailPemeriksaanMikrobiologi" tabindex="-1" role="dialog" aria-labelledby="mdlJadwalKunjunganTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mdlDetailPemeriksaanMikrobiologiTitle">Detail Pemeriksaan <span id="mdljenispemeriksaanklinis"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-sm-12">
+                    <span id="detailPemeriksaanMikrobiologi"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="mdlAlertKunjungan" tabindex="-1" role="dialog" aria-labelledby="mdlAlertKunjunganTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
@@ -373,7 +394,6 @@
         var urlnow = $(this).attr('href').split('/');
         event.preventDefault();
         var cekurl = $(this).attr('href');
-        console.log(cekurl)
         if (cekurl.includes("pagepaketpemeriksaan")) {
             var page = $(this).attr('href').split('pagepaketpemeriksaan=')[1];
             $('#hidden_page_paketpemeriksaan').val(page);
@@ -431,7 +451,18 @@
             success:function(data){
                 $('#bodyDetailTotalBiaya').html('');
                 $('#bodyDetailTotalBiaya').html(data.html);
-                console.log(data);
+            }
+        });
+    }
+
+    function getDetailPaketPemeriksaan(id, arr_parameter_id, jenis_lab_id) {
+        var token = $("input[name='_token']").val();
+        $.ajax({
+            type:'POST',
+            url: "{{ url('/registrasi/getDetailPaketPemeriksaan') }}",
+            data: { _token:token, id:id, arr_parameter_id:arr_parameter_id, jenis_lab_id:jenis_lab_id },
+            success:function(data){
+                $('#detailPemeriksaanMikrobiologi').html(data);
             }
         });
     }
@@ -504,7 +535,6 @@
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
-                console.log(data);
             }
         });
     }
@@ -529,7 +559,6 @@
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
-                console.log(data);
             }
         });
     }

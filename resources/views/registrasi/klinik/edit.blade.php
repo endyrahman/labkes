@@ -323,7 +323,6 @@
         var urlnow = $(this).attr('href').split('/');
         event.preventDefault();
         var cekurl = $(this).attr('href');
-        console.log(cekurl)
         if (cekurl.includes("pagepaketpemeriksaan")) {
             var page = $(this).attr('href').split('pagepaketpemeriksaan=')[1];
             $('#hidden_page_paketpemeriksaan').val(page);
@@ -489,7 +488,6 @@
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
-                console.log(data);
             }
         });
     }
@@ -513,7 +511,6 @@
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
-                console.log(data);
             }
         });
     }
@@ -529,7 +526,6 @@
             success:function(data){
                 $('#bodyDetailTotalBiaya').html('');
                 $('#bodyDetailTotalBiaya').html(data.html);
-                console.log(data);
             }
         });
     }
@@ -564,7 +560,6 @@
             data: formData,
             dataType: 'json',
             success: function (data) {
-                console.log(data);
                 Snackbar.show({
                     text: data.message,
                     pos: 'top-center'

@@ -11,7 +11,6 @@
                 <ul class="list-unstyled mb-0">
                     <li class="list-inline-item"><a href="javascript:void(0)" class="text-muted comments"><i class="uil uil-calendar-alt me-1"></i>{{ date('d-m-Y', strtotime($val->tgl_kegiatan)) }}</a></li>
                 </ul>
-                <a href="blog-detail.html" class="text-muted readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
             </div>
         </div>
         <div class="author">

@@ -21,6 +21,7 @@ use App\Http\Controllers\Landingpage\LandingpageLayanankami;
 use App\Http\Controllers\Landingpage\LandingpagePromosi;
 use App\Http\Controllers\Landingpage\LandingpageSlide;
 use App\Http\Controllers\Pelaporan\Pelaporan;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,8 @@ use App\Http\Controllers\Pelaporan\Pelaporan;
 */
 
 Route::get('/', [Landingpage::class, 'index'])->name('landingpage');
+Route::post('/lupa-password', [ForgotPasswordController::class, 'lupaPassword']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 Route::get('/labklinik', [Landingpage::class, 'indexLabKlinik']);
 Route::get('/labklinik/paginationpemeriksaan', [Landingpage::class, 'paginationPemeriksaan']);
 Route::get('/labkimia', [Landingpage::class, 'indexLabKimia']);
@@ -73,6 +76,7 @@ Route::post('/registrasi/hitungBiayaPaketPemeriksaanKimia', [Registrasi::class, 
 Route::post('/registrasi/hitungBiayaParameterPemeriksaanKimia', [Registrasi::class, 'hitungBiayaParameterPemeriksaanKimia']);
 Route::post('/registrasi/getDetailTotalBiaya', [Registrasi::class, 'getDetailTotalBiaya']);
 Route::post('/registrasi/getDetailTotalBiayaKimiaMikro', [Registrasi::class, 'getDetailTotalBiayaKimiaMikro']);
+Route::post('/registrasi/getDetailPaketPemeriksaan', [Registrasi::class, 'getDetailPaketPemeriksaan']);
 Route::post('/registrasi/getDetailPemeriksaan', [Registrasi::class, 'getDetailPemeriksaan']);
 Route::post('/registrasi/getDataPembayaran', [Registrasi::class, 'getDataPembayaran']);
 Route::get('/registrasi/downloadHasilPemeriksaan/{filename}', [Registrasi::class, 'downloadHasilPemeriksaan'])->name('download.hasil');;
@@ -119,13 +123,13 @@ Route::post('/registrasi/verifikasi/setuju', [Registrasi::class, 'setujuRegistra
 Route::post('/registrasi/verifikasi/batal', [Registrasi::class, 'batalRegistrasi']);
 Route::post('/registrasi/getDataSampel', [Registrasi::class, 'getDataSampel']);
 Route::post('/registrasi/countCetakDownloadHasil', [Registrasi::class, 'countCetakDownloadHasil']);
-Route::post('/registrasi/getDetailPemeriksaanKlinik', [Registrasi::class, 'getDetailPemeriksaanKlinik']);
 Route::post('/registrasi/getPaketPemeriksaanKlinik', [Registrasi::class, 'getPaketPemeriksaanKlinik']);
 Route::post('/registrasi/hitungBiayaPemeriksaanKlinik', [Registrasi::class, 'hitungBiayaPemeriksaanKlinik']);
 Route::post('/registrasi/getPemeriksaanKlinik', [Registrasi::class, 'getPemeriksaanKlinik']);
 
 Route::get('/pencetakan/cetakpenerimaansampel', [Registrasi::class, 'cetakpenerimaansampel']);
 Route::get('/pencetakan/cetakbuktiregistrasi/{pemeriksaan_id}', [Registrasi::class, 'cetakbuktiregistrasi']);
+Route::post('/registrasi/getdatasilkes', [Registrasi::class, 'getDataSilkes']);
 
 Route::get('/pembayaran/laboratorium', [Pembayaran::class, 'indexLaboratorium']);
 Route::get('/pembayaran/laboratorium/create/{pemeriksaan_id}', [Pembayaran::class, 'createPembayaran']);
@@ -147,10 +151,10 @@ Route::post('/pengguna/updatepengguna', [Pengguna::class, 'updatepengguna']);
 
 Route::get('/registrasi/homecare', [HomeCare::class, 'indexPengguna']);
 Route::get('/registrasi/homecare/create', [HomeCare::class, 'createHomecare']);
+Route::get('/registrasi/homecare/edit/{homecare_id}', [HomeCare::class, 'editHomecare']);
 Route::post('/homecare/hitungJarakLokasi', [HomeCare::class, 'hitungJarakLokasi']);
 Route::post('/homecare/pengguna/storehomecare', [HomeCare::class, 'storeHomeCare']);
 Route::post('/homecare/delete', [HomeCare::class, 'hapusRegistrasi']);
-Route::get('/homecare/edit/{homecare_id}', [HomeCare::class, 'editHomecare']);
 Route::post('/homecare/pengguna/updateHomeCare', [HomeCare::class, 'updateHomeCare']);
 Route::get('/homecare/verifikasi', [HomeCare::class, 'indexAdmin']);
 Route::post('/homecare/getJadwalPemeriksaanHomecare', [HomeCare::class, 'getJadwalPemeriksaanHomecare']);

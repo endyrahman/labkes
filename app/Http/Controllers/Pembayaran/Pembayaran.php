@@ -10,6 +10,7 @@ use Auth;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\PembayaranTbl\PembayaranTbl;
 use App\Models\PemeriksaanTbl\PemeriksaanTbl;
+use Illuminate\Support\Facades\Storage;
 
 class Pembayaran extends Controller
 {
@@ -159,9 +160,9 @@ class Pembayaran extends Controller
         $nominal_transfer = $request->nominal_transfer;
         $bukti_bayar = $request->file('bukti_bayar');
 
-        $pathbukti_bayar = $bukti_bayar->store('public/bukti_bayar');
+        $pathbukti_bayar = Storage::disk('public_uploads')->put('bukti_bayar', $bukti_bayar);
         $flbukti_bayar = explode('/', $pathbukti_bayar);
-        $filebukti_bayar = $flbukti_bayar[2];
+        $filebukti_bayar = $flbukti_bayar[1];
 
         try {
             $pembayaran = PembayaranTbl::create([

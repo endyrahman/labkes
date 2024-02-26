@@ -281,7 +281,8 @@
                                 </div><!--end col-->
 
                                 <div class="col-lg-6 col-md-7">
-                                    <form class="login-form p-4">
+                                    <form class="login-form p-4" method="POST" action="{{ url('/lupa-password') }}">
+                                        @csrf
                                         <h4 class="title mb-4">Lupa Password</h4>
                                         <div class="row">
                                             <div class="col-lg-12">

@@ -33,7 +33,11 @@ class Pengguna extends Controller
     public function edit($user_id) {
         $users = Auth::user();
 
-        $user = $users->getDataUserById($user_id);
+        if ($user_id != Auth::id() and $users->role_id != 1) {
+            return view('404.index');
+        }
+
+        $user = $users->getDataUserById(Auth::id());
 
         return view('pengguna.edit', compact('user'));
     }

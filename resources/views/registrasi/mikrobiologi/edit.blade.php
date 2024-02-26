@@ -379,7 +379,6 @@
         var urlnow = $(this).attr('href').split('/');
         event.preventDefault();
         var cekurl = $(this).attr('href');
-        console.log(cekurl)
         if (cekurl.includes("pagepaketpemeriksaan")) {
             var page = $(this).attr('href').split('pagepaketpemeriksaan=')[1];
             $('#hidden_page_paketpemeriksaan').val(page);
@@ -437,7 +436,6 @@
             success:function(data){
                 $('#bodyDetailTotalBiaya').html('');
                 $('#bodyDetailTotalBiaya').html(data.html);
-                console.log(data);
             }
         });
     }
@@ -510,7 +508,6 @@
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
-                console.log(data);
             }
         });
     }
@@ -535,7 +532,6 @@
             data: { _token:token, id:id, total_biaya:total_biaya, biaya:biaya, jenis_lab_id:jenis_lab_id, biaya:biaya, jmlh_sampel:jmlh_sampel, status:status },
             success:function(data){
                 $('#total_biaya').val(data.total_biaya);
-                console.log(data);
             }
         });
     }

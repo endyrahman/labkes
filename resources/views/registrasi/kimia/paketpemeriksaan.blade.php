@@ -28,7 +28,7 @@
                 <div class="btn-group" role="group" aria-label="Basic example">
                     <button type="button" class="btn btn-sm btn-secondary" id="pilihPaket{{ $val->paket_pemeriksaan_id }}" onclick="pilihPaketPemeriksaan({{ $val->paket_pemeriksaan_id }})" style="display: {{ $displaypilih }};padding:5px 8px 5px 8px;">Pilih</button>
                     <button type="button" class="btn btn-sm btn-danger" id="batalPaket{{ $val->paket_pemeriksaan_id }}" onclick="batalPilihPaketPemeriksaan({{ $val->paket_pemeriksaan_id }})" style="display:{{ $display  }};padding:5px 8px 5px 8px;">Batal</button>
-                    <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#mdlDetailPemeriksaanKlinik" onclick="getDetailPemeriksaan({{$val->paket_pemeriksaan_id}},{{$val->arr_parameter_id}})" style="padding:5px 8px 5px 8px;">
+                    <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#mdlDetailPemeriksaanKimia" onclick="getDetailPaketPemeriksaan({{$val->paket_pemeriksaan_id}},'{{$val->arr_parameter_id}}',{{$val->lab_pemeriksaan_id}})" style="padding:5px 8px 5px 8px;">
                             Detail
                         </button>
                 </div>

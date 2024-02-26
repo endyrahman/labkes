@@ -133,14 +133,14 @@
                 <div class="form-row mb-2">
                     <div class="form-group col-md-12">
                         <label for="no_registrasi">No. Silkes</label>
-                        <input type="text" class="form-control" name="no_pelanggan_silkes" id="no_pelanggan_silkes" required placeholder="No. Pelanggan Silkes">
+                        <input type="text" class="form-control" name="upload_no_pelanggan_silkes" id="upload_no_pelanggan_silkes" required placeholder="No. Pelanggan Silkes">
                         <input type="hidden" class="form-control" name="upload_pemeriksaan_id" id="upload_pemeriksaan_id" required>
                     </div>
                 </div>
                 <div class="form-row mb-4">
                     <div class="form-group col-md-12">
                         <label for="no_registrasi">No. Sampel</label>
-                        <input type="text" class="form-control" name="no_sampel_silkes" id="no_sampel_silkes" required placeholder="No. Sampel Silkes">
+                        <input type="text" class="form-control" name="upload_no_sampel_silkes" id="upload_no_sampel_silkes" required placeholder="No. Sampel Silkes">
                     </div>
                 </div>
                 <div class="row">
@@ -208,7 +208,7 @@
                 </button>
             </div>
             <div class="modal-body" >
-                <div class="form-row mb-4">
+                <div class="form-row mb-1">
                     <div class="form-group col-md-6">
                         <label for="no_registrasi">No. Registrasi</label>
                         <input type="text" class="form-control" id="detail_no_registrasi" name="detail_no_registrasi" readonly>
@@ -219,10 +219,10 @@
                     </div>
                     <input type="hidden" class="form-control" id="detail_pemeriksaan_id" name="detail_pemeriksaan_id" readonly>
                 </div>
-                <div class="form-row mb-4">
+                <div class="form-row mb-4" style="display:none;" id="namapasien">
                     <div class="form-group col-md-6">
-                        <label for="no_registrasi">Nama P</label>
-                        <input type="text" class="form-control" id="detail_no_registrasi" name="detail_no_registrasi" readonly>
+                        <label for="no_registrasi">Nama Pasien</label>
+                        <input type="text" class="form-control" id="detail_nama_pasien" name="detail_nama_pasien" readonly>
                     </div>
                 </div>
                 <div class="table-responsive">
@@ -261,7 +261,7 @@
             <div class="modal-body">
                 <input type="hidden" class="form-control" name="validasi_pemeriksaan_id" id="validasi_pemeriksaan_id" readonly>
                 <input type="hidden" class="form-control" name="validasi_pembayaran_id" id="validasi_pembayaran_id" readonly>
-                <div class="col-sm-12 pb-3" id="fotoBuktiBayar" style="display: block; margin: auto;">
+                <div class="col-sm-12 pb-3" id="fotoBuktiBayar" style="display: block;width: auto;text-align: center;max-height: 100%;">
 
                 </div>
                 <div class="row pb-2">
@@ -326,6 +326,26 @@ Title" aria-hidden="true">
                 <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> Tutup</button>
             </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mdlHasilPemeriksaan" tabindex="-1" role="dialog" aria-labelledby="mdlHasilPemeriksaanLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mdlHasilPemeriksaanLabel">Hasil Pemeriksaan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="bodyHasilPemeriksaan">
+                
+            </div>
+            <div class="modal-footer">
+                <a href="" class="btn btn-success" id="downloadHasil" target="_blank">Download PDF</a>
+                <button class="btn btn-danger" data-dismiss="modal"> Tutup</button>
+            </div>
         </div>
     </div>
 </div>
@@ -398,6 +418,12 @@ Title" aria-hidden="true">
                 $('#bodyDetailPemeriksaan').html('');
                 $('#bodyDetailPemeriksaan').html(data.html);
                 $('#detail_nama_pengguna').val(data.nama_lengkap);
+                if (jenis_lab_id == 1) {
+                    $('#namapasien').css('display','block');
+                    $('#detail_nama_pasien').val(data.nama_pasien);
+                } else {
+                    $('#namapasien').css('display','none');
+                }
             }
         });
     }
@@ -425,6 +451,18 @@ Title" aria-hidden="true">
     function mdlUploadHasilLab(id) {
         $('#mdlUploadHasilLab').modal('toggle');
         $('#upload_pemeriksaan_id').val(id);
+        var token = $("input[name='_token']").val();
+
+        $.ajax({
+            type:'POST',
+            url: '{{ url("/registrasi/getdatasilkes") }}',
+            data: { _token:token, pemeriksaan_id:id },
+            success:function(data) {
+                console.log(data.no_pelanggan_silkes);
+                $('#upload_no_pelanggan_silkes').val(data.no_pelanggan_silkes);
+                $('#upload_no_sampel_silkes').val(data.no_sampel_silkes);
+            }
+        });
     }
 
     var upformLab = new FileUploadWithPreview('formLab');
@@ -477,6 +515,7 @@ Title" aria-hidden="true">
 
     function mdlValidasiBayar(pemeriksaan_id) {
         var token = $("input[name='_token']").val();
+        var url = '{{ asset("/uploads/bukti_bayar") }}';
 
         $.ajax({
             type:'POST',
@@ -487,9 +526,18 @@ Title" aria-hidden="true">
                 $('#validasi_pemeriksaan_id').val(data.pemeriksaan_id);
                 $('#validasi_pembayaran_id').val(data.id);
                 $('#nominal_transfer').val(data.nominal_transfer);
-                $('#fotoBuktiBayar').html("<img src='/labkes/storage/bukti_bayar/"+data.bukti_bayar+"' style='max-height:85vh;'>");
+                $('#fotoBuktiBayar').html("<img src='"+url+"/"+data.bukti_bayar+"' style='height:70vh;'>");
             }
         });
+    }
+
+    function bukaHasilPemeriksaan(id, file){
+        var url = '{{ asset("/uploads/hasil") }}';
+
+        $('#mdlHasilPemeriksaan').modal('toggle');
+        $('#bodyHasilPemeriksaan').html('<embed src="'+url+'/'+file+'#toolbar=0" frameborder="0" style="width:100%;height:70vh;">');
+         var url = url+'/'+file;
+         $("#downloadHasil").attr('href', url);
     }
 </script>
 @endsection

@@ -37,6 +37,14 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="form-group">
+                                            <label for="tgl_pendaftaran">Total Biaya <span style="color:red;">*</span></label>
+                                            <input id="total_biaya" name="total_biaya" class="form-control" type="text" value="{{ number_format($data->total_biaya, 0, ',', '.') }}" readonly required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
                                             <label for="tgl_pendaftaran">Nama Pemilik Rekening <span style="color:red;">*</span></label>
                                             <input id="nama_rekening" name="nama_rekening" class="form-control" type="text" placeholder="Nama Pemilik Rekening" required>
                                         </div>
@@ -62,7 +70,7 @@
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="tgl_pendaftaran">Nominal Transfer <span style="color:red;">*</span></label>
-                                            <input id="nominal_transfer" name="nominal_transfer" class="form-control" type="text" placeholder="Nominal Transfer" required>
+                                            <input id="nominal_transfer" name="nominal_transfer" class="form-control" type="text" placeholder="Nominal Transfer" onchange="this.value = formatCurrency(this.value);" onkeyup="this.value = formatCurrency(this.value);" onkeypress="return numbersonly(this, event);" required>
                                         </div>
                                     </div>
                                 </div>

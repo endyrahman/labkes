@@ -29,7 +29,7 @@
                     <tr>
                         <th>No</th>
                         <th>No. Registrasi</th>
-                        <th>Nama</th>
+                        <th>Nama Pasien</th>
                         <th>Pemeriksaan</th>
                         <th>Jadwal Datang</th>
                         <th>Total Biaya</th>
@@ -130,8 +130,8 @@
 
     function bukaHasilPemeriksaan(id, file){
         $('#mdlHasilPemeriksaan').modal('toggle');
-        $('#bodyHasilPemeriksaan').html('<embed src="/labkes/storage/hasil_lab/'+file+'#toolbar=0" frameborder="0" style="width:100%;height:70vh;">');
-         var url = '/labkes/storage/hasil_lab/'+file;
+        $('#bodyHasilPemeriksaan').html('<embed src="/storage/hasil_lab/'+file+'#toolbar=0" frameborder="0" style="width:100%;height:70vh;">');
+         var url = '/storage/hasil_lab/'+file;
          $("#downloadHasil").attr('href', url);
     }
 
@@ -153,7 +153,6 @@
         var urlnow = $(this).attr('href').split('/');
         event.preventDefault();
         var cekurl = $(this).attr('href');
-        console.log(cekurl)
         if (cekurl.includes("pagegridpemeriksaan")) {
             var page = $(this).attr('href').split('pagegridpemeriksaan=')[1];
             $('li').removeClass('active');

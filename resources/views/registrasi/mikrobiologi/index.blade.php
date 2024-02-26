@@ -129,7 +129,6 @@
         var urlnow = $(this).attr('href').split('/');
         event.preventDefault();
         var cekurl = $(this).attr('href');
-        console.log(cekurl)
         if (cekurl.includes("pagegridpemeriksaan")) {
             var page = $(this).attr('href').split('pagegridpemeriksaan=')[1];
             $('li').removeClass('active');

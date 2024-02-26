@@ -14,8 +14,8 @@
                 <tr>
                     <th>No</th>
                     <th>No. Registrasi</th>
-                    <th>Nama</th>
                     <th>Laboratorium</th>
+                    <th>Nama Pasien</th>
                     <th>Jadwal Datang</th>
                     <th>Status Bayar</th>
                     <th class="no-content">#</th>
@@ -26,7 +26,6 @@
                 <tr>
                     <td></td>
                     <td>{{ $val->no_registrasi }}</td>
-                    <td>{{ $val->nama_pasien }}</td>
                     <td>
                         @if ($val->jenis_lab_id == 1)
                             Klinik
@@ -34,6 +33,12 @@
                             Kimia
                         @elseif ($val->jenis_lab_id == 3)
                             Mikrobiologi
+                        @endif
+                    </td>
+                    <td>@if ($val->nama_pasien)
+                            {{ $val->nama_pasien }}
+                        @else
+                            -
                         @endif
                     </td>
                     <td>{{ date('d-m-Y H:i', strtotime($val->tgl_waktu_kunjungan)) }}</td>

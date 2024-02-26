@@ -9,23 +9,13 @@
                     <h1 class="heading">Laboratorium Kesehatan Kota Semarang</h1>
                     <p class="text-dark">Jl. Wr. Supratman, Gisikdrono, Kec. Semarang Barat, Kota Semarang, Jawa Tengah 50149</p>
                     
-<!--                     <div class="d-flex contact-detail align-items-center mt-3">
-                        <div class="icon">
-                            <i data-feather="mail" class="fea icon-m-md text-dark me-3"></i>
-                        </div>
-                        <div class="flex-1 content">
-                            <h5 class="title fw-bold mb-0">Email</h5>
-                            <a href="mailto:contact@example.com" class="text-primary">contact@example.com</a>
-                        </div>
-                    </div> -->
-                    
                     <div class="d-flex contact-detail align-items-center mt-3">
                         <div class="icon">
                             <i data-feather="phone" class="fea icon-m-md text-dark me-3"></i>
                         </div>
                         <div class="flex-1 content">
                             <h5 class="title fw-bold mb-0">Whatsapp</h5>
-                            <a href="tel:+152534-468-854" class="text-primary">0853-2590-0074</a>
+                            <a href="https://wa.link/0ut9hj" class="text-primary" target="_blank">0813-2590-0074</a>
                         </div>
                     </div>
                     
@@ -39,13 +29,6 @@
                         </div>
                     </div>
                     <ul class="list-unstyled social-icon mb-0 mt-4">
-<!--                         <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
-                        <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
-                        <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
-                        <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li>
-                        <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="github" class="fea icon-sm fea-social"></i></a></li>
-                        <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="youtube" class="fea icon-sm fea-social"></i></a></li>
-                        <li class="list-inline-item"><a href="javascript:void(0)" class="rounded"><i data-feather="gitlab" class="fea icon-sm fea-social"></i></a></li> -->
                     </ul>
                 </div>
             </div>
