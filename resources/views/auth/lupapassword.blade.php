@@ -28,8 +28,8 @@
                         <form class="text-left" method="POST" action="{{ url('/reset-password') }}">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                             <div class="form">
-                                <input id="tokenotp" name="tokenotp" type="text" class="form-control" value="{{ $tokenotp }}" readonly required>
-                                <input id="user_id" name="user_id" type="text" class="form-control" value="{{ $user_id }}" readonly required>
+                                <input id="tokenotp" name="tokenotp" type="hidden" class="form-control" value="{{ $tokenotp }}" readonly required>
+                                <input id="user_id" name="user_id" type="hidden" class="form-control" value="{{ $user_id }}" readonly required>
                                 <div id="username-field" class="field-wrapper input">
                                     <label for="username">No. HP</label>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
