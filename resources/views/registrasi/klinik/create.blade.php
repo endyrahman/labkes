@@ -255,7 +255,7 @@
                         </div>
                         <div class="col-sm-4">
                             <label for="tgl_lahir">Tgl. Lahir</label>
-                            <input id="tgl_lahir" name="tgl_lahir" class="form-control flatpickr flatpickr-input active" required>
+                            <input id="tgl_lahir" name="tgl_lahir" class="form-control" placeholder="dd-mm-yyyy" required>
                         </div>
                         <div class="col-sm-4">
                             <label for="jenis_kelamin">Jenis Kelamin</label>
@@ -291,7 +291,7 @@
 <script src="{{ asset('backend/plugins/notification/snackbar/snackbar.min.js') }}"></script>
 <script>
     $(function(){
-        // getPaketPemeriksaanKlinik();
+        $("#tgl_lahir").inputmask("99-99-9999");
     });
 
     var tgl_kunjungan = flatpickr(document.getElementById('tgl_kunjungan'), {
@@ -306,10 +306,6 @@
         locale: {
             "firstDayOfWeek": 1
         }
-    });
-    
-    var tgl_lahir = flatpickr(document.getElementById('tgl_lahir'), {
-        dateFormat: "d-m-Y"
     });
 
     $(document).on('click', '.pagination a', function(event){

@@ -159,7 +159,11 @@ class Pasien extends Controller
      */
     public function edit($id)
     {
-        $data = DB::table('pasien')->where('id', $id)->first();
+        $data = DB::table('pasien')->where('id', $id)->where('user_id', Auth::id())->first();
+
+        if (!$data) {
+            return view('404.index');
+        }
 
         return view('pasien.edit', compact('data'));
     }

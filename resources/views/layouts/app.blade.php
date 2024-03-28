@@ -345,8 +345,6 @@
         </div>
 
         <script src="{{ asset('backend/assets/js/libs/jquery-3.1.1.min.js') }}"></script>
-        <script src="{{ asset('backend/plugins/input-mask/jquery.inputmask.bundle.min.js') }}"></script>
-        <script src="{{ asset('backend/plugins/input-mask/input-mask.js') }}"></script>
 
         <div id="content" class="main-content">
             <div class="layout-px-spacing">
@@ -386,6 +384,7 @@
     <script src="{{ asset('js/datatableregistrasi.js') }}"></script>
     <script src="{{ asset('backend/plugins/notification/snackbar/snackbar.min.js') }}"></script>
     <script src="{{ asset('backend/assets/js/components/ui-accordions.js') }}"></script>
+    <script src="{{ asset('backend/plugins/input-mask/jquery.inputmask.bundle.min.js') }}"></script>
     <script>
         var d_1options3 = {
             chart: {

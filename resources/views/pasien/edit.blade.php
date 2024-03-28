@@ -23,7 +23,7 @@
                 <div class="col-lg-12 mx-auto">
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-md-12 mt-md-0">
-                            <form method="POST" action="{{ url('/pasien/'.$data) }}" id="pasien-form">
+                            <form method="POST" action="{{ url('/pasien/'.$data->id) }}" id="pasien-form">
                                 {{ csrf_field() }}
                                 @method('PUT')
                                 <div class="row">
@@ -43,7 +43,7 @@
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="tgl_lahir">Tgl. Lahir</label>
-                                        <input id="tgl_lahir" name="tgl_lahir" class="form-control flatpickr flatpickr-input active" value="{{ date('d-m-Y', strtotime($data->tgl_lahir)) }}" required>
+                                        <input id="tgl_lahir" name="tgl_lahir" class="form-control" value="{{ date('d-m-Y', strtotime($data->tgl_lahir)) }}" placeholder="dd-mm-yyyy" required>
                                     </div>
                                     <div class="col-sm-4">
                                         <label for="jenis_kelamin">Jenis Kelamin</label>
@@ -78,9 +78,9 @@
 <!-- END PAGE LEVEL SCRIPTS -->
 
 <script src="{{ asset('backend/assets/js/libs/jquery-3.1.1.min.js') }}"></script>
-<script>
-    var tgl_lahir = flatpickr(document.getElementById('tgl_lahir'), {
-        dateFormat: "d-m-Y"
+<script>    
+    $(function(){
+        $("#tgl_lahir").inputmask("99-99-9999");
     });
 </script>
 @endsection
